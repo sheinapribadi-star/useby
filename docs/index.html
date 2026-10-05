@@ -3,19 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>UseBy · Kitchen scene</title>
-    <meta name="description" content="Enter the fridge. Top shelf is racing the clock. Bottom shelf can wait. Flip the recipe book for urgency-ranked dishes and cook in playful steps." />
-    <meta name="theme-color" content="#E2452D" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23e2452d'/><text y='68' x='50' text-anchor='middle' font-size='42' fill='%23fff6e8'>U</text></svg>" />
-    <script type="module" crossorigin src="/useby/assets/index-Ck4gFIf_.js"></script>
-    <link rel="stylesheet" crossorigin href="/useby/assets/index-B3_BE_VM.css">
+    <title>UseBy · Kitchen Quest</title>
+    <meta name="description" content="Cozy kitchen game: open the fridge, cook what expires first, flip the recipe book. Top shelf races the clock." />
+    <meta name="theme-color" content="#E85A4F" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23e85a4f'/><text y='70' x='50' text-anchor='middle' font-size='48'>🥬</text></svg>" />
+    <script type="module" crossorigin src="/useby/assets/index-B1dSRRvy.js"></script>
+    <link rel="stylesheet" crossorigin href="/useby/assets/index-DKOLQJol.css">
   </head>
   <body>
     <div id="app" class="app">
-      <section id="onboard" class="onboard" hidden>
+      <!-- Kitchen Quest onboarding - overlay; shell stays mountable underneath -->
+      <section id="onboard" class="onboard" hidden aria-modal="true" role="dialog" aria-labelledby="ob-title">
         <div class="ob-card">
+          <div class="ob-tab" aria-hidden="true">★ kitchen quest</div>
           <div class="ob-progress" id="ob-progress"></div>
           <div id="ob-slides"></div>
+          <h2 id="ob-title" class="sr-only">Kitchen Quest</h2>
           <div class="ob-nav">
             <button type="button" class="btn ghost" id="ob-skip">Skip</button>
             <button type="button" class="btn primary" id="ob-next">Continue</button>
@@ -23,13 +26,14 @@
         </div>
       </section>
 
-      <div id="shell" hidden>
+      <!-- Shell visible by default so entry never blanks if JS is slow -->
+      <div id="shell" class="shell">
         <header class="top">
           <div class="brand">
             <span class="logo" aria-hidden="true">🥬</span>
             <div>
               <div class="name">UseBy</div>
-              <div class="tag" id="streak-tag">your kitchen scene</div>
+              <div class="tag" id="streak-tag">kitchen quest</div>
             </div>
           </div>
           <div class="top-stats" id="top-stats" hidden></div>
@@ -38,96 +42,83 @@
         <nav class="tabs" role="tablist" aria-label="Kitchen rooms">
           <button class="tab on" data-view="kitchen" type="button"><span>Kitchen</span></button>
           <button class="tab" data-view="fridge" type="button"><span>Fridge</span><em id="cook-badge" hidden></em></button>
-          <button class="tab" data-view="book" type="button"><span>Recipe book</span></button>
+          <button class="tab" data-view="book" type="button"><span>Recipes</span></button>
           <button class="tab" data-view="tips" type="button"><span>Tips</span></button>
         </nav>
 
         <main>
-          <!-- KITCHEN SCENE -->
           <section id="view-kitchen" class="view on" aria-label="Kitchen">
-            <div class="room" id="kitchen-room">
-              <div class="room__wall">
-                <div class="room__window" aria-hidden="true"><span></span></div>
-                <div class="cork" aria-hidden="true">
-                  <span class="cork__note">use soon ↑</span>
-                  <span class="cork__note cork__note--2">cook mode ★</span>
-                </div>
+            <div class="shop" id="kitchen-room">
+              <div class="shop__bg" aria-hidden="true">
+                <div class="shop__shelf-deco"></div>
+                <div class="shop__window"></div>
               </div>
-              <div class="room__counter">
-                <div class="fridge-unit" id="fridge-unit">
-                  <button type="button" class="fridge-closed" id="enter-fridge" aria-label="Open the fridge">
-                    <span class="fridge-closed__brand">UseBy</span>
-                    <span class="fridge-closed__handle" aria-hidden="true"></span>
-                    <span class="fridge-closed__cue">open fridge →</span>
+              <div class="shop__stage">
+                <button type="button" class="fridge-hero" id="enter-fridge" aria-label="Open the fridge">
+                  <img class="fridge-hero__art" src="./refs/fridge.png" alt="" width="280" height="360" />
+                  <span class="fridge-hero__cue">Open fridge ★</span>
+                </button>
+                <div class="shop__side">
+                  <button type="button" class="portal portal--book" id="open-book">
+                    <span class="portal__emoji" aria-hidden="true">📖</span>
+                    <span class="portal__label">Recipe Book</span>
+                    <small>ranked by urgency</small>
                   </button>
-                  <div class="fridge-closed__kick" aria-hidden="true"></div>
-                </div>
-                <div class="counter-top">
-                  <button type="button" class="book-closed" id="open-book" aria-label="Open the recipe book">
-                    <span class="book-closed__spine"></span>
-                    <span class="book-closed__cover">
-                      <em>Recipe Book</em>
-                      <small>ranked by urgency</small>
-                    </span>
-                  </button>
-                  <div class="scan-dock card">
-                    <div class="eyebrow">Stock the fridge</div>
-                    <p class="fine" id="vision-note">Mock vision on-device. Ready for a real model.</p>
+                  <div class="scan-dock heart-card">
+                    <div class="heart-card__title">Stock up!</div>
+                    <p class="fine" id="vision-note">Snap a fridge photo or try the sample kitchen.</p>
                     <div class="hero-actions">
                       <label class="btn primary file-btn">
                         <input type="file" id="fridge-photo" accept="image/*" capture="environment" hidden />
-                        📷 Scan photo
+                        📷 Scan
                       </label>
-                      <button class="btn ghost" id="demo-scan" type="button">Sample fridge ✨</button>
+                      <button class="btn ghost" id="demo-scan" type="button">Sample ✨</button>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="room__floor" aria-hidden="true"></div>
             </div>
           </section>
 
-          <!-- FRIDGE INTERIOR -->
           <section id="view-fridge" class="view" hidden aria-label="Inside the fridge">
-            <div class="fridge-interior card" id="fridge-interior">
-              <div class="fridge-interior__bar">
+            <div class="fridge-scene">
+              <div class="fridge-scene__bar">
                 <button type="button" class="btn ghost sm" id="leave-fridge">← Kitchen</button>
-                <div>
-                  <div class="eyebrow">Inside the fridge</div>
-                  <h2 class="fridge-title">Top shelf races the clock</h2>
-                </div>
+                <div class="heart-card__title" style="margin:0">Today&rsquo;s Ingredients!</div>
                 <div class="toolbar-actions">
                   <button class="btn ghost sm" id="add-item" type="button">+ Add</button>
                   <button class="btn ghost sm" id="clear-fridge" type="button">Clear</button>
                 </div>
               </div>
               <div class="urgency-bar" id="urgency-bar" hidden></div>
-              <div class="shelves" id="shelves">
-                <div class="shelf shelf--top" data-band="hot">
-                  <div class="shelf__label"><span>Top shelf</span><em>use soon</em></div>
-                  <div class="shelf__rail" id="shelf-hot"></div>
-                </div>
-                <div class="shelf shelf--mid" data-band="soon">
-                  <div class="shelf__label"><span>Middle</span><em>this week</em></div>
-                  <div class="shelf__rail" id="shelf-soon"></div>
-                </div>
-                <div class="shelf shelf--bot" data-band="ok">
-                  <div class="shelf__label"><span>Bottom shelf</span><em>longer lasting</em></div>
-                  <div class="shelf__rail" id="shelf-ok"></div>
+              <div class="ing-panel heart-card">
+                <div class="ing-progress" id="ing-progress" aria-hidden="true"><i></i></div>
+                <div class="shelves" id="shelves">
+                  <div class="shelf shelf--top" data-band="hot">
+                    <div class="shelf__label"><span>▲ Top shelf</span><em>use soon</em></div>
+                    <div class="shelf__rail ing-grid" id="shelf-hot"></div>
+                  </div>
+                  <div class="shelf shelf--mid" data-band="soon">
+                    <div class="shelf__label"><span>Middle</span><em>this week</em></div>
+                    <div class="shelf__rail ing-grid" id="shelf-soon"></div>
+                  </div>
+                  <div class="shelf shelf--bot" data-band="ok">
+                    <div class="shelf__label"><span>▼ Bottom shelf</span><em>longer lasting</em></div>
+                    <div class="shelf__rail ing-grid" id="shelf-ok"></div>
+                  </div>
                 </div>
               </div>
-              <div id="item-grid" class="sr-only" aria-hidden="true"></div>
               <p class="fine fridge-hint" id="fridge-hint"></p>
+              <div id="item-grid" class="sr-only" aria-hidden="true"></div>
             </div>
           </section>
 
-          <!-- RECIPE BOOK -->
           <section id="view-book" class="view" hidden aria-label="Recipe book">
-            <div class="book" id="recipe-book">
+            <div class="book-scene">
               <div class="book__toolbar">
                 <div>
-                  <div class="eyebrow">Tonight&rsquo;s pages</div>
-                  <h2>Recipe book</h2>
+                  <div class="eyebrow">Dish menu</div>
+                  <h2 class="heart-card__title" style="display:inline-block">Recipes ★</h2>
                 </div>
                 <div class="filters">
                   <label class="filter">Max time
@@ -143,15 +134,9 @@
                 </div>
               </div>
               <p class="lede-sm" id="cook-lede"></p>
-              <div class="book__spread">
-                <div class="book__page book__page--left" aria-hidden="true">
-                  <div class="book__ruled"></div>
-                  <p class="book__index">Index</p>
-                  <ol class="book__toc" id="book-toc"></ol>
-                </div>
-                <div class="book__page book__page--right">
-                  <div class="grid recipes" id="recipe-grid"></div>
-                </div>
+              <div class="dish-panel heart-card">
+                <ol class="book__toc sr-only" id="book-toc"></ol>
+                <div class="dish-grid" id="recipe-grid"></div>
               </div>
             </div>
           </section>
@@ -164,7 +149,7 @@
               </div>
             </div>
             <div class="grid tips" id="tips-grid"></div>
-            <div class="card method">
+            <div class="card method heart-card">
               <div class="eyebrow">How UseBy thinks</div>
               <h3>Architecture (vision-ready)</h3>
               <ol class="steps">
@@ -179,7 +164,7 @@
 
         <footer class="foot">
           <span>Built by <a href="https://github.com/sheinapribadi-star">Sheina Pribadi</a></span>
-          <span>UseBy · kitchen scene</span>
+          <span>UseBy · kitchen quest</span>
         </footer>
       </div>
     </div>

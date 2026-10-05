@@ -1,7 +1,7 @@
 {
   "name": "useby",
   "version": "1.0.0",
-  "description": "Snap your fridge. Race the clock. Cook what expires first \u2014 kitchen-game craft.",
+  "description": "Snap your fridge. Race the clock. Cook what expires first — kitchen-game craft.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

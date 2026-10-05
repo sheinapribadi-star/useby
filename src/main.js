@@ -61,33 +61,39 @@ function escapeHtml(s) {
 /* ---------- Onboarding ---------- */
 const SLIDES = [
   {
-    emoji: '🏠',
-    title: 'Welcome to the kitchen',
-    body: 'Open the fridge door. Top shelf is racing the clock. Bottom shelf can wait.',
+    emoji: '🧊',
+    title: 'Open the fridge',
+    body: 'Top shelf is racing the clock. Bottom shelf can wait. Tap ingredients to edit.',
   },
   {
     emoji: '📖',
     title: 'Flip the recipe book',
-    body: 'Dishes are ranked by what expires soonest. Tap a page, then enter cook mode.',
+    body: 'Dishes get stars from urgency. Cook what expires first - cozy kitchen quest vibes.',
   },
   {
     emoji: '👩‍🍳',
-    title: 'Cook mode = tiny game',
-    body: 'Prep → Cook → Plate with stars and cheers. Waste less, play more.',
+    title: 'Cook mode is a mini-game',
+    body: 'Prep → Cook → Plate with cheers and stars. Waste less. Play more.',
   },
 ];
 let obIndex = 0;
 
 function showOnboarding() {
-  $('#onboard').hidden = false;
-  $('#shell').hidden = true;
+  const ob = $('#onboard');
+  if (ob) ob.hidden = false;
+  // Keep shell mounted underneath so entry never blanks
+  const shell = $('#shell');
+  if (shell) shell.hidden = false;
   renderOb();
 }
 function finishOnboarding() {
   localStorage.setItem(ONBOARD_KEY, '1');
-  $('#onboard').hidden = true;
-  $('#shell').hidden = false;
+  const ob = $('#onboard');
+  if (ob) ob.hidden = true;
+  const shell = $('#shell');
+  if (shell) shell.hidden = false;
   render();
+  setView('kitchen');
 }
 function renderOb() {
   const s = SLIDES[obIndex];
@@ -97,7 +103,7 @@ function renderOb() {
     <div class="ob-emoji">${s.emoji}</div>
     <h2>${s.title}</h2>
     <p>${s.body}</p>`;
-  $('#ob-next').textContent = obIndex === SLIDES.length - 1 ? 'Let’s cook!' : 'Next';
+  $('#ob-next').textContent = obIndex === SLIDES.length - 1 ? 'Let’s cook!' : 'Continue';
 }
 
 /* ---------- Views ---------- */
@@ -151,6 +157,17 @@ function itemCard(item) {
     </button>`;
 }
 
+function updateIngProgress() {
+  const bar = $('#ing-progress i') || $('#ing-progress')?.querySelector('i');
+  const wrap = $('#ing-progress');
+  if (!wrap) return;
+  const n = fridge.length;
+  const urgent = fridge.filter((i) => i.urgency === 'urgent').length;
+  const pct = n ? Math.min(100, 28 + urgent * 18 + Math.min(n, 8) * 6) : 18;
+  wrap.style.setProperty('--p', `${pct}%`);
+  if (bar) bar.style.width = `${pct}%`;
+}
+
 function renderItems() {
   const hot = [];
   const soon = [];
@@ -180,6 +197,7 @@ function renderItems() {
     fill('#shelf-ok', [], '—');
     const hint = $('#fridge-hint');
     if (hint) hint.textContent = 'Fridge is empty. Back in the kitchen, scan a photo or try the sample.';
+    updateIngProgress();
     return;
   }
 
@@ -190,6 +208,7 @@ function renderItems() {
   if (hint) {
     hint.textContent = `${hot.length} on top · ${soon.length} middle · ${ok.length} bottom. Tap an item to edit.`;
   }
+  updateIngProgress();
 }
 
 function renderRecipes() {
@@ -231,25 +250,18 @@ function renderRecipes() {
 
   grid.innerHTML = ranked.map(({ recipe, score, used, missing, whyNow }) => {
     const hot = used.some((u) => u.urgency === 'urgent');
+    const starN = hot ? 3 : score >= 40 ? 2 : 1;
+    const heartN = Math.min(3, used.length || 1);
+    const stars = '★'.repeat(starN) + '☆'.repeat(3 - starN);
+    const hearts = '♥'.repeat(heartN) + '♡'.repeat(3 - heartN);
     return `
-      <button type="button" class="recipe" data-recipe="${recipe.id}">
-        <div class="recipe-banner ${hot ? 'hot' : ''}">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:1.6rem">${recipe.emoji}</span>
-            <span class="score">Priority ${Math.round(score)}</span>
-          </div>
-          <div class="why-now">${escapeHtml(whyNow)}</div>
-        </div>
-        <div class="recipe-body">
-          <div class="recipe-top">
-            <h3>${recipe.title}</h3>
-          </div>
-          <div class="stats">${recipe.time} min · ${recipe.level} · ${used.length} from fridge</div>
-          <div class="chips">
-            ${used.slice(0, 4).map((u) => `<span class="chip use">${escapeHtml(u.name)}</span>`).join('')}
-            ${missing.slice(0, 2).map((m) => `<span class="chip">need ${escapeHtml(m)}</span>`).join('')}
-          </div>
-        </div>
+      <button type="button" class="dish ${hot ? 'hot' : ''}" data-recipe="${recipe.id}">
+        <div class="dish__stars">${stars}</div>
+        <div class="dish__emoji">${recipe.emoji}</div>
+        <h3 class="dish__title">${escapeHtml(recipe.title)}</h3>
+        <div class="dish__meta">${recipe.time} min · ${recipe.level}</div>
+        <div class="dish__hearts">${hearts}</div>
+        <div class="dish__why">${escapeHtml(whyNow)}</div>
       </button>`;
   }).join('');
 }
@@ -286,26 +298,22 @@ function itemsFromDetections(detected) {
 
 async function runScan(file) {
   const note = $('#vision-note');
-  note.textContent = 'Scanning… mock vision is reading your fridge.';
+  if (note) note.textContent = 'Scanning… mock vision is reading your fridge.';
   $('#kitchen-room')?.classList.add('scanning');
   try {
     const detected = file ? await vision.detectFromImage(file) : await vision.detectSample();
     fridge = itemsFromDetections(detected);
     persist();
-    note.textContent = `Found ${detected.length} items (${vision.mode} vision). Tap Edit on anything that’s off - you’re the source of truth.`;
+    if (note) note.textContent = `Found ${detected.length} items (${vision.mode} vision). Tap Edit on anything that’s off - you’re the source of truth.`;
     toast(`Fridge loaded · ${detected.length} items`);
     setView('fridge');
   } catch (err) {
-    note.textContent = `Scan failed: ${err.message}`;
+    if (note) note.textContent = `Scan failed: ${err.message}`;
   } finally {
     $('#kitchen-room')?.classList.remove('scanning');
   }
 }
 
-function showPhoto(file) {
-  const url = URL.createObjectURL(file);
-  $('#photo-preview').innerHTML = `<div class="photo-frame"><img src="${url}" alt="Your fridge photo" /></div>`;
-}
 
 function openItemDialog(item) {
   editingId = item?.id || null;
@@ -459,31 +467,31 @@ function markCooked() {
 }
 
 /* Events */
-$('#ob-skip').addEventListener('click', finishOnboarding);
-$('#ob-next').addEventListener('click', () => {
+$('#ob-skip')?.addEventListener('click', finishOnboarding);
+$('#ob-next')?.addEventListener('click', () => {
   if (obIndex >= SLIDES.length - 1) finishOnboarding();
   else { obIndex += 1; renderOb(); }
 });
 $$('.tab').forEach((t) => t.addEventListener('click', () => setView(t.dataset.view)));
-$('#demo-scan').addEventListener('click', () => runScan(null));
-$('#fridge-photo').addEventListener('change', (e) => {
+$('#demo-scan')?.addEventListener('click', () => runScan(null));
+$('#fridge-photo')?.addEventListener('change', (e) => {
   const file = e.target.files?.[0];
   if (file) runScan(file);
 });
 $('#enter-fridge')?.addEventListener('click', () => setView('fridge'));
 $('#open-book')?.addEventListener('click', () => setView('book'));
 $('#leave-fridge')?.addEventListener('click', () => setView('kitchen'));
-$('#add-item').addEventListener('click', () => openItemDialog(null));
-$('#clear-fridge').addEventListener('click', () => {
+$('#add-item')?.addEventListener('click', () => openItemDialog(null));
+$('#clear-fridge')?.addEventListener('click', () => {
   if (fridge.length && confirm('Clear all fridge items?')) {
     fridge = [];
     persist();
   }
 });
-$('#max-time').addEventListener('change', renderRecipes);
-$('#beginner-only').addEventListener('change', renderRecipes);
-$('#dialog-cancel').addEventListener('click', () => $('#item-dialog').close());
-$('#item-form').addEventListener('submit', (e) => {
+$('#max-time')?.addEventListener('change', renderRecipes);
+$('#beginner-only')?.addEventListener('change', renderRecipes);
+$('#dialog-cancel')?.addEventListener('click', () => $('#item-dialog')?.close());
+$('#item-form')?.addEventListener('submit', (e) => {
   e.preventDefault();
   const fd = new FormData(e.target);
   const data = {
@@ -505,15 +513,24 @@ $('#shelves')?.addEventListener('click', (e) => {
   const edit = e.target.closest('[data-edit]');
   if (edit) openItemDialog(fridge.find((i) => i.id === edit.dataset.edit));
 });
-$('#recipe-grid').addEventListener('click', (e) => {
+$('#recipe-grid')?.addEventListener('click', (e) => {
   const card = e.target.closest('[data-recipe]');
   if (card) openRecipe(card.dataset.recipe);
 });
 
 renderTips();
-if (!localStorage.getItem(ONBOARD_KEY)) showOnboarding();
-else {
-  $('#onboard').hidden = true;
-  $('#shell').hidden = false;
-  render();
+const shell = $('#shell');
+if (shell) shell.hidden = false;
+try {
+  render(); // kitchen always ready under the quest card
+  if (!localStorage.getItem(ONBOARD_KEY)) showOnboarding();
+  else {
+    const ob = $('#onboard');
+    if (ob) ob.hidden = true;
+  }
+} catch (err) {
+  console.error('UseBy boot', err);
+  const ob = $('#onboard');
+  if (ob) ob.hidden = true;
+  try { render(); } catch (_) {}
 }
