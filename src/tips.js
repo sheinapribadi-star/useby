@@ -5,11 +5,11 @@ export const TIPS = [
   },
   {
     title: 'Heat is an ingredient',
-    body: 'Crowded pans steam. Give food space and wait for the sizzle — that’s browning (flavor).',
+    body: 'Crowded pans steam. Give food space and wait for the sizzle - that’s browning (flavor).',
   },
   {
     title: 'Acid brightens leftovers',
-    body: 'Lemon, lime, or vinegar wake up food that tastes flat — especially greens and roasted veg.',
+    body: 'Lemon, lime, or vinegar wake up food that tastes flat - especially greens and roasted veg.',
   },
   {
     title: 'Mise en place = calm',

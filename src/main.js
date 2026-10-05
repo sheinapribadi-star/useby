@@ -63,7 +63,7 @@ const SLIDES = [
   {
     emoji: '⏰',
     title: 'Race the fridge clock',
-    body: 'Every item gets a use-by estimate. Cook the ones flashing first — like a kitchen mini-quest.',
+    body: 'Every item gets a use-by estimate. Cook the ones flashing first - like a kitchen mini-quest.',
   },
   {
     emoji: '📸',
@@ -183,7 +183,7 @@ function renderRecipes() {
   const grid = $('#recipe-grid');
 
   if (!fridge.length) {
-    lede.textContent = 'Add fridge items first — then we rank by what expires soonest.';
+    lede.textContent = 'Add fridge items first - then we rank by what expires soonest.';
     grid.innerHTML = `
       <div class="empty card">
         <div class="illus">📝</div>
@@ -267,7 +267,7 @@ async function runScan(file) {
     const detected = file ? await vision.detectFromImage(file) : await vision.detectSample();
     fridge = itemsFromDetections(detected);
     persist();
-    note.textContent = `Found ${detected.length} items (${vision.mode} vision). Tap Edit on anything that’s off — you’re the source of truth.`;
+    note.textContent = `Found ${detected.length} items (${vision.mode} vision). Tap Edit on anything that’s off - you’re the source of truth.`;
     toast(`Fridge loaded · ${detected.length} items`);
     setView('fridge');
     if (file) showPhoto(file);
@@ -316,7 +316,7 @@ function openRecipe(id) {
     <div>
       <div class="eyebrow">From your fridge</div>
       <div class="chips" style="margin-top:8px">
-        ${used.map((u) => `<span class="chip use">${escapeHtml(u.name)} · ${labelFor(u.daysLeft)}</span>`).join('') || '<span class="chip">—</span>'}
+        ${used.map((u) => `<span class="chip use">${escapeHtml(u.name)} · ${labelFor(u.daysLeft)}</span>`).join('') || '<span class="chip"> - </span>'}
       </div>
     </div>
     ${missing.length ? `<p class="missing">Still handy to have: ${missing.map(escapeHtml).join(', ')}</p>` : ''}
@@ -417,7 +417,7 @@ function markCooked() {
   $('#recipe-dialog').close();
   persist();
   toast(rescued.length
-    ? `Stars earned — rescued ${rescued.length} item${rescued.length > 1 ? 's' : ''}`
+    ? `Stars earned - rescued ${rescued.length} item${rescued.length > 1 ? 's' : ''}`
     : 'Logged! Kitchen streak continues.');
   cookCtx = null;
   setView('fridge');

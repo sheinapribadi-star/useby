@@ -10,12 +10,12 @@ export const RECIPES = [
     ingredients: ['spinach', 'eggs', 'garlic', 'butter'],
     steps: [
       'Melt a knob of butter in a pan on medium.',
-      'Add minced garlic for 30 seconds — don’t let it brown.',
+      'Add minced garlic for 30 seconds - don’t let it brown.',
       'Wilt a big handful of spinach with a pinch of salt.',
-      'Crack in eggs, cover 2–3 min until whites set.',
+      'Crack in eggs, cover 2-3 min until whites set.',
       'Finish with pepper (chili flakes if you like heat).',
     ],
-    tip: 'Crowding spinach is fine — it shrinks a lot.',
+    tip: 'Crowding spinach is fine - it shrinks a lot.',
   },
   {
     id: 'yogurt-bowl',
@@ -44,7 +44,7 @@ export const RECIPES = [
     steps: [
       'Slice chicken into thin strips; salt lightly.',
       'Sear in a hot oiled pan until mostly cooked; set aside.',
-      'Stir-fry sliced pepper and onion 4–5 min.',
+      'Stir-fry sliced pepper and onion 4-5 min.',
       'Add garlic, return chicken, splash soy sauce.',
       'Cook until glossy and chicken is done through.',
     ],
@@ -64,7 +64,7 @@ export const RECIPES = [
       'Pour in eggs; gently fold until just set.',
       'Top with sliced green onion if you have it.',
     ],
-    tip: 'Pull eggs early — they keep cooking off-heat.',
+    tip: 'Pull eggs early - they keep cooking off-heat.',
   },
   {
     id: 'herb-salmon',
@@ -72,11 +72,11 @@ export const RECIPES = [
     time: 20,
     level: 'intermediate',
     emoji: '🐟',
-    why: 'Fish waits for no one — cook it tonight.',
+    why: 'Fish waits for no one - cook it tonight.',
     ingredients: ['salmon', 'lime', 'cilantro', 'garlic', 'oil'],
     steps: [
       'Pat salmon dry; salt and pepper.',
-      'Sear skin-side down in oil 4 min; flip 2–3 min.',
+      'Sear skin-side down in oil 4 min; flip 2-3 min.',
       'Mix chopped cilantro, lime juice, minced garlic, oil.',
       'Spoon herb sauce over the hot fish.',
     ],
@@ -222,10 +222,10 @@ export function whyThisNow(used) {
   const sorted = [...used].sort((a, b) => a.daysLeft - b.daysLeft);
   const top = sorted[0];
   const name = top.name;
-  if (top.daysLeft < 0) return `Rescues your ${name} — past its estimate, cook today.`;
-  if (top.daysLeft === 0) return `Cook tonight — ${name} is on its last day.`;
+  if (top.daysLeft < 0) return `Rescues your ${name} - past its estimate, cook today.`;
+  if (top.daysLeft === 0) return `Cook tonight - ${name} is on its last day.`;
   if (top.daysLeft === 1) return `Priority: ${name} has about 1 day left.`;
-  if (top.daysLeft <= 3) return `Good now — burns down ${name} before day ${top.daysLeft}.`;
+  if (top.daysLeft <= 3) return `Good now - burns down ${name} before day ${top.daysLeft}.`;
   if (sorted.length > 1) return `Uses ${sorted.length} fridge items, led by ${name}.`;
   return `Nice match for your ${name}.`;
 }
