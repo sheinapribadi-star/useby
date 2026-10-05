@@ -890,3 +890,22 @@ dialog::backdrop { background: rgba(59, 36, 24, 0.55); }
     max-height: 200px; overflow: auto;
   }
 }
+
+.shop__side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  position: relative;
+  z-index: 1;
+}
+.shop__side .cookbook-cover {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  filter: drop-shadow(3px 3px 0 rgba(59,36,24,0.2));
+}
+.shop__stage--fridge .fridge {
+  position: relative;
+  z-index: 2;
+}
