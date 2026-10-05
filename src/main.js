@@ -108,14 +108,71 @@ function renderOb() {
 
 /* ---------- Views ---------- */
 function setView(name) {
+  let openDoor = false;
+  if (name === 'fridge') {
+    name = 'kitchen';
+    openDoor = true;
+  }
   $$('.tab').forEach((t) => t.classList.toggle('on', t.dataset.view === name));
   $$('.view').forEach((v) => {
     const on = v.id === `view-${name}`;
     v.classList.toggle('on', on);
     v.hidden = !on;
   });
-  if (name === 'book') renderRecipes();
+  // Keep dummy fridge section hidden
+  const vf = $('#view-fridge');
+  if (vf) { vf.hidden = true; vf.classList.remove('on'); }
+
+  if (name === 'book') {
+    closeFridgeDoor();
+    renderRecipes();
+  } else if (name === 'tips') {
+    closeFridgeDoor();
+  } else if (name === 'kitchen' && openDoor) {
+    openFridgeDoor();
+  }
 }
+
+function isFridgeOpen() {
+  return $('#fridge')?.classList.contains('is-open');
+}
+
+function openFridgeDoor() {
+  const fr = $('#fridge');
+  const door = $('#enter-fridge');
+  const closeBtn = $('#leave-fridge');
+  if (!fr) return;
+  fr.classList.add('is-open');
+  fr.dataset.open = 'true';
+  if (door) door.setAttribute('aria-expanded', 'true');
+  if (closeBtn) closeBtn.hidden = false;
+  const cue = $('#fridge-cue');
+  if (cue) cue.textContent = 'Open ★';
+  // Ensure kitchen view visible
+  $$('.tab').forEach((tab) => tab.classList.toggle('on', tab.dataset.view === 'kitchen'));
+  const kitchen = $('#view-kitchen');
+  if (kitchen) { kitchen.hidden = false; kitchen.classList.add('on'); }
+  const book = $('#view-book');
+  if (book) { book.hidden = true; book.classList.remove('on'); }
+  const tips = $('#view-tips');
+  if (tips) { tips.hidden = true; tips.classList.remove('on'); }
+  const vf = $('#view-fridge');
+  if (vf) { vf.hidden = true; vf.classList.remove('on'); }
+}
+
+function closeFridgeDoor() {
+  const fr = $('#fridge');
+  const door = $('#enter-fridge');
+  const closeBtn = $('#leave-fridge');
+  if (!fr) return;
+  fr.classList.remove('is-open');
+  fr.dataset.open = 'false';
+  if (door) door.setAttribute('aria-expanded', 'false');
+  if (closeBtn) closeBtn.hidden = true;
+  const cue = $('#fridge-cue');
+  if (cue) cue.textContent = 'Tap to open ★';
+}
+
 
 function renderStats() {
   const urgent = fridge.filter((i) => i.urgency === 'urgent').length;
@@ -229,7 +286,7 @@ function renderRecipes() {
         <button class="btn primary" type="button" data-go-fridge>Enter fridge</button>
       </div>`;
     if (toc) toc.innerHTML = '<li>Waiting for ingredients…</li>';
-    grid.querySelector('[data-go-fridge]')?.addEventListener('click', () => setView('fridge'));
+    grid.querySelector('[data-go-fridge]')?.addEventListener('click', () => { setView('kitchen'); openFridgeDoor(); });
     return;
   }
   if (!ranked.length) {
@@ -306,7 +363,8 @@ async function runScan(file) {
     persist();
     if (note) note.textContent = `Found ${detected.length} items (${vision.mode} vision). Tap Edit on anything that’s off - you’re the source of truth.`;
     toast(`Fridge loaded · ${detected.length} items`);
-    setView('fridge');
+    setView('kitchen');
+    openFridgeDoor();
   } catch (err) {
     if (note) note.textContent = `Scan failed: ${err.message}`;
   } finally {
@@ -464,6 +522,7 @@ function markCooked() {
     : 'Logged! Kitchen streak continues.');
   cookCtx = null;
   setView('kitchen');
+  closeFridgeDoor();
 }
 
 /* Events */
@@ -478,9 +537,12 @@ $('#fridge-photo')?.addEventListener('change', (e) => {
   const file = e.target.files?.[0];
   if (file) runScan(file);
 });
-$('#enter-fridge')?.addEventListener('click', () => setView('fridge'));
+$('#enter-fridge')?.addEventListener('click', () => {
+  if (isFridgeOpen()) closeFridgeDoor();
+  else openFridgeDoor();
+});
 $('#open-book')?.addEventListener('click', () => setView('book'));
-$('#leave-fridge')?.addEventListener('click', () => setView('kitchen'));
+$('#leave-fridge')?.addEventListener('click', () => closeFridgeDoor());
 $('#add-item')?.addEventListener('click', () => openItemDialog(null));
 $('#clear-fridge')?.addEventListener('click', () => {
   if (fridge.length && confirm('Clear all fridge items?')) {

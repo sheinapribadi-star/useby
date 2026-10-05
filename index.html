@@ -38,24 +38,65 @@
         </header>
 
         <nav class="tabs" role="tablist" aria-label="Kitchen rooms">
-          <button class="tab on" data-view="kitchen" type="button"><span>Kitchen</span></button>
-          <button class="tab" data-view="fridge" type="button"><span>Fridge</span><em id="cook-badge" hidden></em></button>
+          <button class="tab on" data-view="kitchen" type="button"><span>Fridge</span></button>
+          <button class="tab" data-view="fridge" type="button" hidden><span>Fridge</span><em id="cook-badge" hidden></em></button>
           <button class="tab" data-view="book" type="button"><span>Recipes</span></button>
           <button class="tab" data-view="tips" type="button"><span>Tips</span></button>
         </nav>
 
         <main>
-          <section id="view-kitchen" class="view on" aria-label="Kitchen">
+          <section id="view-kitchen" class="view on" aria-label="Kitchen fridge">
             <div class="shop" id="kitchen-room">
               <div class="shop__bg" aria-hidden="true">
                 <div class="shop__shelf-deco"></div>
                 <div class="shop__window"></div>
+                <div class="shop__spark shop__spark--1">✦</div>
+                <div class="shop__spark shop__spark--2">★</div>
               </div>
-              <div class="shop__stage">
-                <button type="button" class="fridge-hero" id="enter-fridge" aria-label="Open the fridge">
-                  <img class="fridge-hero__art" src="./refs/fridge.png" alt="" width="280" height="360" />
-                  <span class="fridge-hero__cue">Open fridge ★</span>
-                </button>
+
+              <div class="fridge-toolbar">
+                <div class="heart-card__title" style="margin:0">Today&rsquo;s fridge</div>
+                <div class="toolbar-actions">
+                  <button class="btn ghost sm" id="add-item" type="button">+ Add</button>
+                  <button class="btn ghost sm" id="clear-fridge" type="button">Clear</button>
+                  <button class="btn ghost sm" id="leave-fridge" type="button" hidden>Close door</button>
+                </div>
+              </div>
+              <div class="urgency-bar" id="urgency-bar" hidden></div>
+
+              <div class="shop__stage shop__stage--fridge">
+                <div class="fridge" id="fridge" data-open="false">
+                  <div class="fridge__body">
+                    <div class="fridge__interior" aria-live="polite">
+                      <div class="fridge__light" aria-hidden="true"></div>
+                      <div class="ing-progress" id="ing-progress" aria-hidden="true"><i></i></div>
+                      <div class="shelves" id="shelves">
+                        <div class="shelf shelf--top" data-band="hot">
+                          <div class="shelf__label"><span>▲ Top</span><em>use soon</em></div>
+                          <div class="shelf__rail ing-grid" id="shelf-hot"></div>
+                        </div>
+                        <div class="shelf shelf--mid" data-band="soon">
+                          <div class="shelf__label"><span>Middle</span><em>this week</em></div>
+                          <div class="shelf__rail ing-grid" id="shelf-soon"></div>
+                        </div>
+                        <div class="shelf shelf--bot" data-band="ok">
+                          <div class="shelf__label"><span>▼ Bottom</span><em>lasting</em></div>
+                          <div class="shelf__rail ing-grid" id="shelf-ok"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="button" class="fridge__door" id="enter-fridge" aria-expanded="false" aria-controls="shelves" aria-label="Open the fridge door">
+                      <span class="fridge__door-face">
+                        <span class="fridge__brand">UseBy</span>
+                        <span class="fridge__handle" aria-hidden="true"></span>
+                        <span class="fridge__magnet" aria-hidden="true">♡</span>
+                        <span class="fridge__cue" id="fridge-cue">Tap to open ★</span>
+                      </span>
+                    </button>
+                  </div>
+                  <div class="fridge__kick" aria-hidden="true"></div>
+                </div>
+
                 <div class="shop__side">
                   <button type="button" class="portal portal--book" id="open-book">
                     <span class="portal__emoji" aria-hidden="true">📖</span>
@@ -73,42 +114,17 @@
                       <button class="btn ghost" id="demo-scan" type="button">Sample ✨</button>
                     </div>
                   </div>
+                  <p class="fine fridge-hint" id="fridge-hint"></p>
                 </div>
               </div>
+              <div id="item-grid" class="sr-only" aria-hidden="true"></div>
+              <!-- alias for fridge tab -->
+              <div id="view-fridge-anchor" hidden></div>
             </div>
           </section>
 
-          <section id="view-fridge" class="view" hidden aria-label="Inside the fridge">
-            <div class="fridge-scene">
-              <div class="fridge-scene__bar">
-                <button type="button" class="btn ghost sm" id="leave-fridge">← Kitchen</button>
-                <div class="heart-card__title" style="margin:0">Today&rsquo;s Ingredients!</div>
-                <div class="toolbar-actions">
-                  <button class="btn ghost sm" id="add-item" type="button">+ Add</button>
-                  <button class="btn ghost sm" id="clear-fridge" type="button">Clear</button>
-                </div>
-              </div>
-              <div class="urgency-bar" id="urgency-bar" hidden></div>
-              <div class="ing-panel heart-card">
-                <div class="ing-progress" id="ing-progress" aria-hidden="true"><i></i></div>
-                <div class="shelves" id="shelves">
-                  <div class="shelf shelf--top" data-band="hot">
-                    <div class="shelf__label"><span>▲ Top shelf</span><em>use soon</em></div>
-                    <div class="shelf__rail ing-grid" id="shelf-hot"></div>
-                  </div>
-                  <div class="shelf shelf--mid" data-band="soon">
-                    <div class="shelf__label"><span>Middle</span><em>this week</em></div>
-                    <div class="shelf__rail ing-grid" id="shelf-soon"></div>
-                  </div>
-                  <div class="shelf shelf--bot" data-band="ok">
-                    <div class="shelf__label"><span>▼ Bottom shelf</span><em>longer lasting</em></div>
-                    <div class="shelf__rail ing-grid" id="shelf-ok"></div>
-                  </div>
-                </div>
-              </div>
-              <p class="fine fridge-hint" id="fridge-hint"></p>
-              <div id="item-grid" class="sr-only" aria-hidden="true"></div>
-            </div>
+          <section id="view-fridge" class="view" hidden aria-label="Fridge (opens door)">
+            <p class="fine" style="padding:12px">Opening fridge…</p>
           </section>
 
           <section id="view-book" class="view" hidden aria-label="Recipe book">
