@@ -48,8 +48,6 @@
           <section id="view-kitchen" class="view on" aria-label="Kitchen fridge">
             <div class="shop" id="kitchen-room">
               <div class="shop__bg" aria-hidden="true">
-                <div class="shop__shelf-deco"></div>
-                <div class="shop__window"></div>
                 <div class="shop__spark shop__spark--1">✦</div>
                 <div class="shop__spark shop__spark--2">★</div>
               </div>
@@ -65,44 +63,46 @@
               <div class="urgency-bar" id="urgency-bar" hidden></div>
 
               <div class="shop__stage shop__stage--fridge">
-                <div class="fridge" id="fridge" data-open="false">
-                  <div class="fridge__body">
-                    <div class="fridge__interior" aria-live="polite">
-                      <div class="fridge__light" aria-hidden="true"></div>
-                      <div class="ing-progress" id="ing-progress" aria-hidden="true"><i></i></div>
-                      <div class="shelves" id="shelves">
-                        <div class="shelf shelf--top" data-band="hot">
-                          <div class="shelf__label"><span>▲ Top</span><em>use soon</em></div>
-                          <div class="shelf__rail ing-grid" id="shelf-hot"></div>
-                        </div>
-                        <div class="shelf shelf--mid" data-band="soon">
-                          <div class="shelf__label"><span>Middle</span><em>this week</em></div>
-                          <div class="shelf__rail ing-grid" id="shelf-soon"></div>
-                        </div>
-                        <div class="shelf shelf--bot" data-band="ok">
-                          <div class="shelf__label"><span>▼ Bottom</span><em>lasting</em></div>
-                          <div class="shelf__rail ing-grid" id="shelf-ok"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <button type="button" class="fridge__door" id="enter-fridge" aria-expanded="false" aria-controls="shelves" aria-label="Open the fridge door">
-                      <span class="fridge__door-face">
-                        <span class="fridge__brand">UseBy</span>
-                        <span class="fridge__handle" aria-hidden="true"></span>
-                        <span class="fridge__magnet" aria-hidden="true">♡</span>
-                        <span class="fridge__cue" id="fridge-cue">Tap to open ★</span>
-                      </span>
-                    </button>
-                  </div>
-                  <div class="fridge__kick" aria-hidden="true"></div>
-                </div>
-
-                <div class="shop__side">
-                  <button type="button" class="portal portal--book" id="open-book">
+                <div class="fridge-stack">
+                  <button type="button" class="portal portal--book portal--behind" id="open-book" aria-label="Open the recipe book">
                     <span class="portal__emoji" aria-hidden="true">📖</span>
                     <span class="portal__label">Recipe Book</span>
                     <small>ranked by urgency</small>
                   </button>
+                  <div class="fridge" id="fridge" data-open="false">
+                    <div class="fridge__body">
+                      <div class="fridge__interior" aria-live="polite">
+                        <div class="fridge__light" aria-hidden="true"></div>
+                        <div class="ing-progress" id="ing-progress" aria-hidden="true"><i></i></div>
+                        <div class="shelves" id="shelves">
+                          <div class="shelf shelf--top" data-band="hot">
+                            <div class="shelf__label"><span>▲ Top</span><em>use soon</em></div>
+                            <div class="shelf__rail ing-grid" id="shelf-hot"></div>
+                          </div>
+                          <div class="shelf shelf--mid" data-band="soon">
+                            <div class="shelf__label"><span>Middle</span><em>this week</em></div>
+                            <div class="shelf__rail ing-grid" id="shelf-soon"></div>
+                          </div>
+                          <div class="shelf shelf--bot" data-band="ok">
+                            <div class="shelf__label"><span>▼ Bottom</span><em>lasting</em></div>
+                            <div class="shelf__rail ing-grid" id="shelf-ok"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <button type="button" class="fridge__door" id="enter-fridge" aria-expanded="false" aria-controls="shelves" aria-label="Open the fridge door">
+                        <span class="fridge__door-face">
+                          <span class="fridge__brand">UseBy</span>
+                          <span class="fridge__handle" aria-hidden="true"></span>
+                          <span class="fridge__magnet" aria-hidden="true">♡</span>
+                          <span class="fridge__cue" id="fridge-cue">Tap to open ★</span>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="fridge__kick" aria-hidden="true"></div>
+                  </div>
+                </div>
+
+                <div class="shop__side">
                   <div class="scan-dock heart-card">
                     <div class="heart-card__title">Stock up!</div>
                     <p class="fine" id="vision-note">Snap a fridge photo or try the sample kitchen.</p>
@@ -148,6 +148,10 @@
                 </div>
               </div>
               <p class="lede-sm" id="cook-lede"></p>
+              <p class="dish-legend" aria-label="Recipe icon legend">
+                <span><b>★</b> urgency fit · uses food that expires soon</span>
+                <span><b>♥</b> fridge clear · how many of your items it uses</span>
+              </p>
               <div class="dish-panel heart-card">
                 <ol class="book__toc sr-only" id="book-toc"></ol>
                 <div class="dish-grid" id="recipe-grid"></div>

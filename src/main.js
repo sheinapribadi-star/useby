@@ -8,7 +8,7 @@ import './style.css';
 
 import { createVisionProvider } from './vision.js';
 import {
-  estimateDays, addDays, daysLeft, urgency, labelFor, EMOJI, guessCategory,
+  estimateDays, addDays, daysLeft, urgency, labelFor, emojiFor, guessCategory,
 } from './shelfLife.js';
 import { rankRecipes } from './recipes.js';
 import { loadFridge, saveFridge, uid } from './storage.js';
@@ -208,7 +208,7 @@ function renderUrgency() {
 function itemCard(item) {
   return `
     <button type="button" class="shelf-item" data-edit="${item.id}">
-      <span class="shelf-item__emoji">${EMOJI[item.category] || '🫙'}</span>
+      <span class="shelf-item__emoji">${emojiFor(item.name, item.category)}</span>
       <span class="badge ${item.urgency}">${labelFor(item.daysLeft)}</span>
       <h3 class="shelf-item__name">${escapeHtml(item.name)}</h3>
     </button>`;
@@ -307,17 +307,21 @@ function renderRecipes() {
 
   grid.innerHTML = ranked.map(({ recipe, score, used, missing, whyNow }) => {
     const hot = used.some((u) => u.urgency === 'urgent');
-    const starN = hot ? 3 : score >= 40 ? 2 : 1;
-    const heartN = Math.min(3, used.length || 1);
+    // ★ urgency fit: how well it burns down soon-to-expire food
+    let starN = 1;
+    if (hot || score >= 55) starN = 3;
+    else if (used.some((u) => u.urgency === 'soon') || score >= 30) starN = 2;
+    // ♥ fridge clear: how many of your fridge items this dish uses
+    const heartN = Math.min(3, Math.max(1, used.length));
     const stars = '★'.repeat(starN) + '☆'.repeat(3 - starN);
     const hearts = '♥'.repeat(heartN) + '♡'.repeat(3 - heartN);
     return `
       <button type="button" class="dish ${hot ? 'hot' : ''}" data-recipe="${recipe.id}">
-        <div class="dish__stars">${stars}</div>
+        <div class="dish__stars" title="Urgency fit">${stars}</div>
         <div class="dish__emoji">${recipe.emoji}</div>
         <h3 class="dish__title">${escapeHtml(recipe.title)}</h3>
         <div class="dish__meta">${recipe.time} min · ${recipe.level}</div>
-        <div class="dish__hearts">${hearts}</div>
+        <div class="dish__hearts" title="Fridge clear">${hearts}</div>
         <div class="dish__why">${escapeHtml(whyNow)}</div>
       </button>`;
   }).join('');

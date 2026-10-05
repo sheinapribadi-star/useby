@@ -51,8 +51,56 @@ export const ITEM_DAYS = {
 };
 
 export const EMOJI = {
-  leafy: '🥬', veg: '🥕', fruit: '🍓', dairy: '🥛', protein: '🥚', herb: '🌿', other: '🫙',
+  leafy: '🥬', veg: '🥕', fruit: '🍓', dairy: '🥛', protein: '🍗', herb: '🌿', other: '🫙',
 };
+
+/** Per-item icons so chicken ≠ egg, tomato ≠ carrot, etc. */
+const ITEM_EMOJI = [
+  [/chicken|turkey|thigh|drumstick|wing/, '🍗'],
+  [/beef|steak|ground beef/, '🥩'],
+  [/pork|bacon|ham/, '🥓'],
+  [/salmon|fish|tuna|cod/, '🐟'],
+  [/tofu/, '🧊'],
+  [/egg/, '🥚'],
+  [/spin|lettuce|kale|arugula|chard|greens/, '🥬'],
+  [/cilantro|parsley|basil|mint|dill|herb/, '🌿'],
+  [/tomato/, '🍅'],
+  [/carrot/, '🥕'],
+  [/broccoli/, '🥦'],
+  [/pepper|bell pepper/, '🫑'],
+  [/cucumber/, '🥒'],
+  [/onion/, '🧅'],
+  [/garlic/, '🧄'],
+  [/potato/, '🥔'],
+  [/corn/, '🌽'],
+  [/mushroom/, '🍄'],
+  [/avocado/, '🥑'],
+  [/lemon/, '🍋'],
+  [/lime/, '🍋'],
+  [/orange/, '🍊'],
+  [/apple/, '🍎'],
+  [/banana/, '🍌'],
+  [/strawberr/, '🍓'],
+  [/blueberr|berry|berries/, '🫐'],
+  [/grape/, '🍇'],
+  [/mango/, '🥭'],
+  [/milk/, '🥛'],
+  [/yogurt/, '🥣'],
+  [/cheese|cheddar/, '🧀'],
+  [/butter/, '🧈'],
+  [/cream/, '🥛'],
+  [/bread/, '🍞'],
+  [/rice/, '🍚'],
+  [/pasta|noodle/, '🍝'],
+];
+
+export function emojiFor(name, category) {
+  const n = String(name || '').toLowerCase();
+  for (const [re, em] of ITEM_EMOJI) {
+    if (re.test(n)) return em;
+  }
+  return EMOJI[category] || '🫙';
+}
 
 export function guessCategory(name) {
   const n = name.toLowerCase();

@@ -742,3 +742,56 @@ dialog::backdrop { background: rgba(59, 36, 24, 0.55); }
 @media (min-width: 720px) {
   .fridge { max-width: 300px; }
 }
+
+
+/* Book peeks from behind the fridge */
+.fridge-stack {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  min-height: 320px;
+  width: 100%;
+}
+.portal--behind {
+  position: absolute;
+  left: 0;
+  bottom: 28%;
+  z-index: 1;
+  width: min(42%, 130px);
+  transform: rotate(-8deg) translateX(-8px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.portal--behind:hover {
+  transform: rotate(-6deg) translateX(-10px) translateY(-2px);
+  z-index: 4;
+}
+.fridge-stack .fridge {
+  position: relative;
+  z-index: 3;
+  margin: 0;
+}
+.dish-legend {
+  display: flex; flex-wrap: wrap; gap: 8px 14px;
+  margin: 0 0 12px; padding: 8px 12px;
+  background: var(--butter-soft); border: 3px solid var(--ink);
+  border-radius: 14px; box-shadow: var(--shadow-sm);
+  font-size: 0.78rem; font-weight: 700; color: var(--ink);
+}
+.dish-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.dish-legend b { color: #d4890a; font-size: 0.95rem; }
+.dish-legend span:last-child b { color: var(--pink); }
+
+/* Kill leftover deco squares if any */
+.shop__shelf-deco, .shop__window { display: none !important; }
+
+@media (max-width: 520px) {
+  .portal--behind {
+    left: auto; right: 0; bottom: 32%;
+    transform: rotate(8deg) translateX(6px);
+    width: min(38%, 110px);
+  }
+  .portal--behind:hover {
+    transform: rotate(6deg) translateX(8px) translateY(-2px);
+  }
+}
