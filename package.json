@@ -1,7 +1,7 @@
 {
   "name": "useby",
   "version": "1.0.0",
-  "description": "Snap your fridge. Cook what expires first. Learn as you go.",
+  "description": "Snap your fridge. Race the clock. Cook what expires first \u2014 kitchen-game craft.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,8 +10,8 @@
   "author": "Sheina Pribadi",
   "license": "MIT",
   "dependencies": {
-    "@fontsource/dm-sans": "^5.3.0",
-    "@fontsource/fraunces": "^5.3.0"
+    "@fontsource/fredoka": "^5.2.5",
+    "@fontsource/nunito": "^5.2.5"
   },
   "devDependencies": {
     "vite": "^8.3.2"

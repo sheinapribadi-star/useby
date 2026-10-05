@@ -1,20 +1,17 @@
 # UseBy
 
-**Snap your fridge. Cook what expires first. Learn as you go.**
+Snap your fridge. Race the use-by clock. Cook what expires first — with a playful kitchen-game feel (thick outlines, sticker chips, cook-mode stars) and the same craft bar as the rest of the portfolio.
 
-UseBy estimates use-by dates from typical shelf life and ranks recipes so the soonest-to-spoil ingredients get cooked first.
+**Live:** https://sheinapribadi-star.github.io/useby/
 
-**Live demo:** https://sheinapribadi-star.github.io/useby/
+## Flow
+1. Scan a fridge photo (mocked vision) or load the sample
+2. Edit use-by dates — urgency sticky notes on each item
+3. Cook tab ranks recipes so soonest ingredients win
+4. Cook mode walks steps as Prep → Cook → Plate with cheers
 
-See `PRD.md`, `DESIGN_BRIEF.md`, and `research/REFERENCES.md`.
-
-## Features
-- Onboarding + empty states with clear CTAs
-- Mock vision scan (sample fridge or photo) — `VisionProvider` ready for real CV
-- Urgency-sorted inventory; editable use-bys
-- Recipes with **Why this now** priority copy
-- Cook mode step pager + rescue stats
-- Beginner tips
+## Design
+Phone-first shell, Fredoka + Nunito, tomato / butter / mint kitchen palette, hard offset shadows. Cooking Mama–core game energy without the brand name. Clean, not confusing.
 
 ## Develop
 ```bash

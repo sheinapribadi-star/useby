@@ -1,8 +1,9 @@
-import '@fontsource/dm-sans/400.css';
-import '@fontsource/dm-sans/600.css';
-import '@fontsource/dm-sans/700.css';
-import '@fontsource/fraunces/600.css';
-import '@fontsource/fraunces/600-italic.css';
+import '@fontsource/nunito/600.css';
+import '@fontsource/nunito/700.css';
+import '@fontsource/nunito/800.css';
+import '@fontsource/fredoka/500.css';
+import '@fontsource/fredoka/600.css';
+import '@fontsource/fredoka/700.css';
 import './style.css';
 
 import { createVisionProvider } from './vision.js';
@@ -60,19 +61,19 @@ function escapeHtml(s) {
 /* ---------- Onboarding ---------- */
 const SLIDES = [
   {
-    emoji: '🥬',
-    title: 'Your food has a clock',
-    body: 'UseBy estimates when fridge items will fade — then nudges you to cook the soonest ones first.',
+    emoji: '⏰',
+    title: 'Race the fridge clock',
+    body: 'Every item gets a use-by estimate. Cook the ones flashing first — like a kitchen mini-quest.',
   },
   {
-    emoji: '📷',
-    title: 'Scan once, cook smarter',
-    body: 'Snap a photo (or try the sample fridge). Edit any date — estimates are typical shelf life, not a lecture.',
+    emoji: '📸',
+    title: 'Snap, tweak, go',
+    body: 'Scan a fridge photo or try the sample. Edit any date. Estimates are typical shelf life, yours to own.',
   },
   {
-    emoji: '🍳',
-    title: 'Recipes that explain themselves',
-    body: 'Every dish shows why it’s recommended now — so you learn urgency, not just follow steps.',
+    emoji: '👩‍🍳',
+    title: 'Cook mode = tiny game',
+    body: 'Step through dishes with stars and cheers. Each recipe shows why it wins tonight.',
   },
 ];
 let obIndex = 0;
@@ -96,7 +97,7 @@ function renderOb() {
     <div class="ob-emoji">${s.emoji}</div>
     <h2>${s.title}</h2>
     <p>${s.body}</p>`;
-  $('#ob-next').textContent = obIndex === SLIDES.length - 1 ? 'Open my fridge' : 'Continue';
+  $('#ob-next').textContent = obIndex === SLIDES.length - 1 ? 'Let’s cook!' : 'Next';
 }
 
 /* ---------- Views ---------- */
@@ -148,7 +149,7 @@ function renderItems() {
       <div class="empty card">
         <div class="illus">🧊</div>
         <h3>Fridge is empty</h3>
-        <p>Scan a photo or load the sample fridge — we’ll estimate use-bys and queue tonight’s dinner.</p>
+        <p>Scan a photo or load the sample fridge. We’ll estimate use-bys and queue tonight’s dinner quest.</p>
         <button class="btn primary" type="button" id="empty-sample">Try sample fridge</button>
       </div>`;
     $('#empty-sample')?.addEventListener('click', () => runScan(null));
@@ -325,7 +326,7 @@ function openRecipe(id) {
     </div>
     <p style="margin:0;color:var(--muted)"><strong>Tip:</strong> ${recipe.tip}</p>
     <div class="dialog-actions">
-      <button class="btn primary" type="button" id="start-cook">Start cook mode</button>
+      <button class="btn primary" type="button" id="start-cook">Enter cook mode 🍳</button>
       <button class="btn ghost" type="button" id="mark-cooked">I cooked this</button>
     </div>
   `;
@@ -335,27 +336,67 @@ function openRecipe(id) {
   $('#mark-cooked').onclick = () => markCooked();
 }
 
+const COOK_VERBS = ['Chop!', 'Stir!', 'Flip!', 'Taste!', 'Plate!', 'Next!'];
+const COOK_PRAISE = ['Nice!', 'Perfect!', 'Yum!', 'Great timing!', 'Chef move!', 'So good!'];
+
+function cookStageFor(step, total) {
+  const t = (step + 1) / total;
+  if (t <= 0.34) return 0; // Prep
+  if (t <= 0.75) return 1; // Cook
+  return 2; // Plate
+}
+
 function openCookMode() {
   if (!cookCtx) return;
   let step = 0;
+  let finished = false;
   const { recipe } = cookCtx;
   const sheet = $('#cook-sheet');
+  const stages = ['Prep', 'Cook', 'Plate'];
   const draw = () => {
-    const last = step >= recipe.steps.length - 1;
+    if (finished) {
+      sheet.innerHTML = `
+        <div class="cook-done">
+          <div class="big">🌟</div>
+          <h3>Dish cleared!</h3>
+          <p class="fine" style="margin:0 0 14px">You cooked ${escapeHtml(recipe.title)}. Fridge quest complete.</p>
+          <button class="btn primary block" type="button" id="cook-finish">Collect stars</button>
+          <button class="btn ghost sm" type="button" id="cook-close" style="margin-top:8px;width:100%">Exit</button>
+        </div>`;
+      $('#cook-finish').onclick = () => { $('#cook-dialog').close(); markCooked(); };
+      $('#cook-close').onclick = () => $('#cook-dialog').close();
+      return;
+    }
+    const total = recipe.steps.length;
+    const last = step >= total - 1;
+    const stageIdx = cookStageFor(step, total);
+    const stars = '★'.repeat(Math.min(3, step + 1)) + '☆'.repeat(Math.max(0, 3 - (step + 1)));
+    const verb = last ? 'Done!' : COOK_VERBS[step % COOK_VERBS.length];
+    const praise = step === 0 ? '' : `<div class="cook-praise">${COOK_PRAISE[(step - 1) % COOK_PRAISE.length]}</div>`;
     sheet.innerHTML = `
+      <div class="cook-hud">
+        <div class="cook-stage">
+          ${stages.map((s, i) => {
+            const cls = i < stageIdx ? 'done' : i === stageIdx ? 'on' : '';
+            return `<span class="${cls}">${s}</span>`;
+          }).join('')}
+        </div>
+        <div class="cook-stars" aria-label="${step + 1} of 3 star progress">${stars}</div>
+      </div>
       <div class="cook-step">
-        <div class="n">Step ${step + 1} of ${recipe.steps.length} · ${recipe.title}</div>
-        <p>${recipe.steps[step]}</p>
-        <div class="fine">${recipe.tip}</div>
+        <div class="n">Step ${step + 1} / ${total} · ${escapeHtml(recipe.title)}</div>
+        <p>${escapeHtml(recipe.steps[step])}</p>
+        ${praise}
+        <div class="fine">${escapeHtml(recipe.tip)}</div>
       </div>
       <div class="cook-nav">
         <button class="btn ghost" type="button" id="cook-back" ${step === 0 ? 'disabled' : ''}>Back</button>
-        <button class="btn primary" type="button" id="cook-next">${last ? 'Done — I cooked it' : 'Next step'}</button>
+        <button class="btn primary" type="button" id="cook-next">${verb}</button>
       </div>
-      <button class="btn ghost sm" type="button" id="cook-close">Exit</button>`;
+      <button class="btn ghost sm" type="button" id="cook-close">Exit kitchen</button>`;
     $('#cook-back').onclick = () => { step -= 1; draw(); };
     $('#cook-next').onclick = () => {
-      if (last) { $('#cook-dialog').close(); markCooked(); }
+      if (last) { finished = true; draw(); }
       else { step += 1; draw(); }
     };
     $('#cook-close').onclick = () => $('#cook-dialog').close();
@@ -376,8 +417,8 @@ function markCooked() {
   $('#recipe-dialog').close();
   persist();
   toast(rescued.length
-    ? `Nice — cooked & rescued ${rescued.length} item${rescued.length > 1 ? 's' : ''}`
-    : 'Logged. You’re cooking more — fridge thanks you.');
+    ? `Stars earned — rescued ${rescued.length} item${rescued.length > 1 ? 's' : ''}`
+    : 'Logged! Kitchen streak continues.');
   cookCtx = null;
   setView('fridge');
 }

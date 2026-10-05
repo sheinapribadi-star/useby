@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>UseBy · Cook what expires first</title>
     <meta name="description" content="Snap your fridge. UseBy estimates use-by dates and ranks recipes so the soonest-to-spoil food gets cooked first — a calmer way to waste less and learn to cook." />
-    <meta name="theme-color" content="#2F5D4A" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232f5d4a'/><text y='68' x='50' text-anchor='middle' font-size='42' fill='%23f4efe6'>U</text></svg>" />
+    <meta name="theme-color" content="#E2452D" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23e2452d'/><text y='68' x='50' text-anchor='middle' font-size='42' fill='%23fff6e8'>U</text></svg>" />
   </head>
   <body>
     <div id="app" class="app">
@@ -28,7 +28,7 @@
             <span class="logo" aria-hidden="true">🥬</span>
             <div>
               <div class="name">UseBy</div>
-              <div class="tag" id="streak-tag">cook what expires first</div>
+              <div class="tag" id="streak-tag">race the fridge clock</div>
             </div>
           </div>
           <div class="top-stats" id="top-stats" hidden></div>
@@ -44,15 +44,15 @@
           <section id="view-fridge" class="view on" aria-label="Fridge">
             <div class="hero card" id="fridge-hero">
               <div class="hero-copy">
-                <div class="eyebrow">Your kitchen radar</div>
-                <h1>Snap the fridge.<br /><em>Eat before it fades.</em></h1>
-                <p>We estimate use-by dates from typical shelf life, then push recipes that burn down what&rsquo;s closest to gone.</p>
+                <div class="eyebrow">Kitchen quest</div>
+                <h1>Snap the fridge.<br /><em>Beat the clock.</em></h1>
+                <p>Estimate use-bys, then queue recipes that rescue what&rsquo;s closest to gone. Playful steps. Clear craft.</p>
                 <div class="hero-actions">
                   <label class="btn primary file-btn">
                     <input type="file" id="fridge-photo" accept="image/*" capture="environment" hidden />
-                    📷 Scan fridge photo
+                    📷 Scan fridge
                   </label>
-                  <button class="btn ghost" id="demo-scan" type="button">Try sample fridge</button>
+                  <button class="btn ghost" id="demo-scan" type="button">Try sample fridge ✨</button>
                 </div>
                 <p class="fine" id="vision-note">Demo vision is mocked on-device. Architecture is ready for a real vision model.</p>
               </div>
@@ -85,8 +85,8 @@
           <section id="view-cook" class="view" hidden aria-label="Cook">
             <div class="toolbar">
               <div>
-                <div class="eyebrow">Tonight&rsquo;s plan</div>
-                <h2>Recipes ranked by urgency</h2>
+                <div class="eyebrow">Tonight&rsquo;s quest</div>
+                <h2>Dishes ranked by urgency</h2>
               </div>
               <div class="filters">
                 <label class="filter">Max time
@@ -108,8 +108,8 @@
           <section id="view-learn" class="view" hidden aria-label="Learn">
             <div class="toolbar">
               <div>
-                <div class="eyebrow">Kitchen school</div>
-                <h2>Learn while you cook</h2>
+                <div class="eyebrow">Kitchen tips</div>
+                <h2>Level up while you cook</h2>
               </div>
             </div>
             <div class="grid tips" id="tips-grid"></div>
@@ -128,7 +128,7 @@
 
         <footer class="foot">
           <span>Built by <a href="https://github.com/sheinapribadi-star">Sheina Pribadi</a></span>
-          <span>UseBy · waste less, cook more</span>
+          <span>UseBy · waste less, play more</span>
         </footer>
       </div>
     </div>
