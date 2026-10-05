@@ -10,10 +10,10 @@ export const RECIPES = [
     ingredients: ['spinach', 'eggs', 'garlic', 'butter'],
     steps: [
       'Melt a knob of butter in a pan on medium.',
-      'Add minced garlic for 30 seconds.',
+      'Add minced garlic for 30 seconds — don’t let it brown.',
       'Wilt a big handful of spinach with a pinch of salt.',
       'Crack in eggs, cover 2–3 min until whites set.',
-      'Finish with pepper (and chili flakes if you like).',
+      'Finish with pepper (chili flakes if you like heat).',
     ],
     tip: 'Crowding spinach is fine — it shrinks a lot.',
   },
@@ -46,7 +46,7 @@ export const RECIPES = [
       'Sear in a hot oiled pan until mostly cooked; set aside.',
       'Stir-fry sliced pepper and onion 4–5 min.',
       'Add garlic, return chicken, splash soy sauce.',
-      'Cook until glossy and chicken is done.',
+      'Cook until glossy and chicken is done through.',
     ],
     tip: 'High heat + don’t overcrowd = browning, not steaming.',
   },
@@ -161,6 +161,22 @@ export const RECIPES = [
     ],
     tip: 'Thermometer to 165°F / 74°C removes the guesswork.',
   },
+  {
+    id: 'cilantro-eggs',
+    title: 'Herby scrambled eggs',
+    time: 10,
+    level: 'beginner',
+    emoji: '🌿',
+    why: 'A bunch of cilantro disappears happily into eggs.',
+    ingredients: ['eggs', 'cilantro', 'butter', 'cheese'],
+    steps: [
+      'Beat eggs with salt.',
+      'Melt butter on low-medium; pour eggs.',
+      'Fold slowly; add chopped cilantro and cheese near the end.',
+      'Stop while still glossy.',
+    ],
+    tip: 'Low heat = custardy eggs, not rubber.',
+  },
 ];
 
 function tokens(s) {
@@ -173,10 +189,6 @@ export function ingredientMatches(recipeIng, fridgeName) {
   return a.includes(b) || b.includes(a) || tokens(recipeIng).some((t) => t.length > 3 && b.includes(t));
 }
 
-/**
- * Score: prioritize recipes that consume more soon-to-expire items.
- * Higher is better.
- */
 export function scoreRecipe(recipe, fridge) {
   let urgencyPoints = 0;
   let matched = 0;
@@ -204,10 +216,28 @@ export function scoreRecipe(recipe, fridge) {
   return { score, matched, used, missing, coverage };
 }
 
-export function rankRecipes(fridge, maxTime = 999) {
+/** Human “why this now” line from the most urgent matched item. */
+export function whyThisNow(used) {
+  if (!used.length) return 'Uses what you already have.';
+  const sorted = [...used].sort((a, b) => a.daysLeft - b.daysLeft);
+  const top = sorted[0];
+  const name = top.name;
+  if (top.daysLeft < 0) return `Rescues your ${name} — past its estimate, cook today.`;
+  if (top.daysLeft === 0) return `Cook tonight — ${name} is on its last day.`;
+  if (top.daysLeft === 1) return `Priority: ${name} has about 1 day left.`;
+  if (top.daysLeft <= 3) return `Good now — burns down ${name} before day ${top.daysLeft}.`;
+  if (sorted.length > 1) return `Uses ${sorted.length} fridge items, led by ${name}.`;
+  return `Nice match for your ${name}.`;
+}
+
+export function rankRecipes(fridge, { maxTime = 999, beginnerOnly = false } = {}) {
   return RECIPES
     .filter((r) => r.time <= maxTime)
-    .map((r) => ({ recipe: r, ...scoreRecipe(r, fridge) }))
+    .filter((r) => !beginnerOnly || r.level === 'beginner')
+    .map((r) => {
+      const scored = scoreRecipe(r, fridge);
+      return { recipe: r, ...scored, whyNow: whyThisNow(scored.used) };
+    })
     .filter((x) => x.matched > 0)
     .sort((a, b) => b.score - a.score);
 }
