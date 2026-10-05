@@ -3,14 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>UseBy · Cook what expires first</title>
-    <meta name="description" content="Snap your fridge. UseBy estimates use-by dates and ranks recipes so the soonest-to-spoil food gets cooked first - a calmer way to waste less and learn to cook." />
+    <title>UseBy · Kitchen scene</title>
+    <meta name="description" content="Enter the fridge. Top shelf is racing the clock. Bottom shelf can wait. Flip the recipe book for urgency-ranked dishes and cook in playful steps." />
     <meta name="theme-color" content="#E2452D" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23e2452d'/><text y='68' x='50' text-anchor='middle' font-size='42' fill='%23fff6e8'>U</text></svg>" />
   </head>
   <body>
     <div id="app" class="app">
-      <!-- Onboarding -->
       <section id="onboard" class="onboard" hidden>
         <div class="ob-card">
           <div class="ob-progress" id="ob-progress"></div>
@@ -28,87 +27,137 @@
             <span class="logo" aria-hidden="true">🥬</span>
             <div>
               <div class="name">UseBy</div>
-              <div class="tag" id="streak-tag">race the fridge clock</div>
+              <div class="tag" id="streak-tag">your kitchen scene</div>
             </div>
           </div>
           <div class="top-stats" id="top-stats" hidden></div>
         </header>
 
-        <nav class="tabs" role="tablist" aria-label="Main">
-          <button class="tab on" data-view="fridge" type="button"><span>Fridge</span></button>
-          <button class="tab" data-view="cook" type="button"><span>Cook</span><em id="cook-badge" hidden></em></button>
-          <button class="tab" data-view="learn" type="button"><span>Learn</span></button>
+        <nav class="tabs" role="tablist" aria-label="Kitchen rooms">
+          <button class="tab on" data-view="kitchen" type="button"><span>Kitchen</span></button>
+          <button class="tab" data-view="fridge" type="button"><span>Fridge</span><em id="cook-badge" hidden></em></button>
+          <button class="tab" data-view="book" type="button"><span>Recipe book</span></button>
+          <button class="tab" data-view="tips" type="button"><span>Tips</span></button>
         </nav>
 
         <main>
-          <section id="view-fridge" class="view on" aria-label="Fridge">
-            <div class="hero card" id="fridge-hero">
-              <div class="hero-copy">
-                <div class="eyebrow">Kitchen quest</div>
-                <h1>Snap the fridge.<br /><em>Beat the clock.</em></h1>
-                <p>Estimate use-bys, then queue recipes that rescue what&rsquo;s closest to gone. Playful steps. Clear craft.</p>
-                <div class="hero-actions">
-                  <label class="btn primary file-btn">
-                    <input type="file" id="fridge-photo" accept="image/*" capture="environment" hidden />
-                    📷 Scan fridge
+          <!-- KITCHEN SCENE -->
+          <section id="view-kitchen" class="view on" aria-label="Kitchen">
+            <div class="room" id="kitchen-room">
+              <div class="room__wall">
+                <div class="room__window" aria-hidden="true"><span></span></div>
+                <div class="cork" aria-hidden="true">
+                  <span class="cork__note">use soon ↑</span>
+                  <span class="cork__note cork__note--2">cook mode ★</span>
+                </div>
+              </div>
+              <div class="room__counter">
+                <div class="fridge-unit" id="fridge-unit">
+                  <button type="button" class="fridge-closed" id="enter-fridge" aria-label="Open the fridge">
+                    <span class="fridge-closed__brand">UseBy</span>
+                    <span class="fridge-closed__handle" aria-hidden="true"></span>
+                    <span class="fridge-closed__cue">open fridge →</span>
+                  </button>
+                  <div class="fridge-closed__kick" aria-hidden="true"></div>
+                </div>
+                <div class="counter-top">
+                  <button type="button" class="book-closed" id="open-book" aria-label="Open the recipe book">
+                    <span class="book-closed__spine"></span>
+                    <span class="book-closed__cover">
+                      <em>Recipe Book</em>
+                      <small>ranked by urgency</small>
+                    </span>
+                  </button>
+                  <div class="scan-dock card">
+                    <div class="eyebrow">Stock the fridge</div>
+                    <p class="fine" id="vision-note">Mock vision on-device. Ready for a real model.</p>
+                    <div class="hero-actions">
+                      <label class="btn primary file-btn">
+                        <input type="file" id="fridge-photo" accept="image/*" capture="environment" hidden />
+                        📷 Scan photo
+                      </label>
+                      <button class="btn ghost" id="demo-scan" type="button">Sample fridge ✨</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="room__floor" aria-hidden="true"></div>
+            </div>
+          </section>
+
+          <!-- FRIDGE INTERIOR -->
+          <section id="view-fridge" class="view" hidden aria-label="Inside the fridge">
+            <div class="fridge-interior card" id="fridge-interior">
+              <div class="fridge-interior__bar">
+                <button type="button" class="btn ghost sm" id="leave-fridge">← Kitchen</button>
+                <div>
+                  <div class="eyebrow">Inside the fridge</div>
+                  <h2 class="fridge-title">Top shelf races the clock</h2>
+                </div>
+                <div class="toolbar-actions">
+                  <button class="btn ghost sm" id="add-item" type="button">+ Add</button>
+                  <button class="btn ghost sm" id="clear-fridge" type="button">Clear</button>
+                </div>
+              </div>
+              <div class="urgency-bar" id="urgency-bar" hidden></div>
+              <div class="shelves" id="shelves">
+                <div class="shelf shelf--top" data-band="hot">
+                  <div class="shelf__label"><span>Top shelf</span><em>use soon</em></div>
+                  <div class="shelf__rail" id="shelf-hot"></div>
+                </div>
+                <div class="shelf shelf--mid" data-band="soon">
+                  <div class="shelf__label"><span>Middle</span><em>this week</em></div>
+                  <div class="shelf__rail" id="shelf-soon"></div>
+                </div>
+                <div class="shelf shelf--bot" data-band="ok">
+                  <div class="shelf__label"><span>Bottom shelf</span><em>longer lasting</em></div>
+                  <div class="shelf__rail" id="shelf-ok"></div>
+                </div>
+              </div>
+              <div id="item-grid" class="sr-only" aria-hidden="true"></div>
+              <p class="fine fridge-hint" id="fridge-hint"></p>
+            </div>
+          </section>
+
+          <!-- RECIPE BOOK -->
+          <section id="view-book" class="view" hidden aria-label="Recipe book">
+            <div class="book" id="recipe-book">
+              <div class="book__toolbar">
+                <div>
+                  <div class="eyebrow">Tonight&rsquo;s pages</div>
+                  <h2>Recipe book</h2>
+                </div>
+                <div class="filters">
+                  <label class="filter">Max time
+                    <select id="max-time">
+                      <option value="999">Any</option>
+                      <option value="15">≤ 15 min</option>
+                      <option value="25">≤ 25 min</option>
+                      <option value="35" selected>≤ 35 min</option>
+                      <option value="60">≤ 60 min</option>
+                    </select>
                   </label>
-                  <button class="btn ghost" id="demo-scan" type="button">Try sample fridge ✨</button>
-                </div>
-                <p class="fine" id="vision-note">Demo vision is mocked on-device. Architecture is ready for a real vision model.</p>
-              </div>
-              <div class="hero-visual" id="photo-preview">
-                <div class="fridge-door" aria-hidden="true">
-                  <div class="handle"></div>
-                  <div class="shelf"><span>🥛</span><span>🥚</span><span>🧈</span></div>
-                  <div class="shelf"><span>🥬</span><span>🥕</span><span>🫑</span></div>
-                  <div class="shelf"><span>🧀</span><span>🍓</span><span>🍋</span></div>
+                  <label class="check-inline"><input type="checkbox" id="beginner-only" /> Beginner</label>
                 </div>
               </div>
-            </div>
-
-            <div class="toolbar">
-              <div>
-                <div class="eyebrow">Inventory</div>
-                <h2>What&rsquo;s in the fridge</h2>
+              <p class="lede-sm" id="cook-lede"></p>
+              <div class="book__spread">
+                <div class="book__page book__page--left" aria-hidden="true">
+                  <div class="book__ruled"></div>
+                  <p class="book__index">Index</p>
+                  <ol class="book__toc" id="book-toc"></ol>
+                </div>
+                <div class="book__page book__page--right">
+                  <div class="grid recipes" id="recipe-grid"></div>
+                </div>
               </div>
-              <div class="toolbar-actions">
-                <button class="btn ghost sm" id="add-item" type="button">+ Add</button>
-                <button class="btn ghost sm" id="sort-toggle" type="button">Sort: urgency</button>
-                <button class="btn ghost sm" id="clear-fridge" type="button">Clear</button>
-              </div>
             </div>
-
-            <div class="urgency-bar" id="urgency-bar" hidden></div>
-            <div class="grid items" id="item-grid"></div>
           </section>
 
-          <section id="view-cook" class="view" hidden aria-label="Cook">
+          <section id="view-tips" class="view" hidden aria-label="Tips">
             <div class="toolbar">
               <div>
-                <div class="eyebrow">Tonight&rsquo;s quest</div>
-                <h2>Dishes ranked by urgency</h2>
-              </div>
-              <div class="filters">
-                <label class="filter">Max time
-                  <select id="max-time">
-                    <option value="999">Any</option>
-                    <option value="15">≤ 15 min</option>
-                    <option value="25">≤ 25 min</option>
-                    <option value="35" selected>≤ 35 min</option>
-                    <option value="60">≤ 60 min</option>
-                  </select>
-                </label>
-                <label class="check-inline"><input type="checkbox" id="beginner-only" /> Beginner</label>
-              </div>
-            </div>
-            <p class="lede-sm" id="cook-lede"></p>
-            <div class="grid recipes" id="recipe-grid"></div>
-          </section>
-
-          <section id="view-learn" class="view" hidden aria-label="Learn">
-            <div class="toolbar">
-              <div>
-                <div class="eyebrow">Kitchen tips</div>
+                <div class="eyebrow">Corkboard</div>
                 <h2>Level up while you cook</h2>
               </div>
             </div>
@@ -117,10 +166,10 @@
               <div class="eyebrow">How UseBy thinks</div>
               <h3>Architecture (vision-ready)</h3>
               <ol class="steps">
-                <li><strong>VisionProvider</strong> - mock today; swap Claude Vision / GPT-4o / custom CV tomorrow.</li>
-                <li><strong>ShelfLife</strong> - category + known-item day heuristics; every date is editable.</li>
-                <li><strong>RecipeEngine</strong> - scores by days-left of matched ingredients (sooner = higher).</li>
-                <li><strong>localStorage</strong> - your fridge stays on this device for the MVP.</li>
+                <li><strong>VisionProvider</strong> - mock today; swap a real vision model tomorrow.</li>
+                <li><strong>ShelfLife</strong> - category heuristics; every date is editable.</li>
+                <li><strong>RecipeEngine</strong> - scores by days-left (sooner = higher).</li>
+                <li><strong>localStorage</strong> - fridge stays on this device for the MVP.</li>
               </ol>
             </div>
           </section>
@@ -128,7 +177,7 @@
 
         <footer class="foot">
           <span>Built by <a href="https://github.com/sheinapribadi-star">Sheina Pribadi</a></span>
-          <span>UseBy · waste less, play more</span>
+          <span>UseBy · kitchen scene</span>
         </footer>
       </div>
     </div>
@@ -153,6 +202,7 @@
         <div class="dialog-actions">
           <button type="submit" class="btn primary" value="save">Save</button>
           <button type="button" class="btn ghost" id="dialog-cancel">Cancel</button>
+          <button type="button" class="btn danger sm" id="dialog-remove" hidden>Remove</button>
         </div>
       </form>
     </dialog>
@@ -166,7 +216,6 @@
     </dialog>
 
     <div id="toast" class="toast" hidden role="status"></div>
-
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

@@ -61,19 +61,19 @@ function escapeHtml(s) {
 /* ---------- Onboarding ---------- */
 const SLIDES = [
   {
-    emoji: '⏰',
-    title: 'Race the fridge clock',
-    body: 'Every item gets a use-by estimate. Cook the ones flashing first - like a kitchen mini-quest.',
+    emoji: '🏠',
+    title: 'Welcome to the kitchen',
+    body: 'Open the fridge door. Top shelf is racing the clock. Bottom shelf can wait.',
   },
   {
-    emoji: '📸',
-    title: 'Snap, tweak, go',
-    body: 'Scan a fridge photo or try the sample. Edit any date. Estimates are typical shelf life, yours to own.',
+    emoji: '📖',
+    title: 'Flip the recipe book',
+    body: 'Dishes are ranked by what expires soonest. Tap a page, then enter cook mode.',
   },
   {
     emoji: '👩‍🍳',
     title: 'Cook mode = tiny game',
-    body: 'Step through dishes with stars and cheers. Each recipe shows why it wins tonight.',
+    body: 'Prep → Cook → Plate with stars and cheers. Waste less, play more.',
   },
 ];
 let obIndex = 0;
@@ -108,7 +108,7 @@ function setView(name) {
     v.classList.toggle('on', on);
     v.hidden = !on;
   });
-  if (name === 'cook') renderRecipes();
+  if (name === 'book') renderRecipes();
 }
 
 function renderStats() {
@@ -142,37 +142,54 @@ function renderUrgency() {
   ].join('');
 }
 
+function itemCard(item) {
+  return `
+    <button type="button" class="shelf-item" data-edit="${item.id}">
+      <span class="shelf-item__emoji">${EMOJI[item.category] || '🫙'}</span>
+      <span class="badge ${item.urgency}">${labelFor(item.daysLeft)}</span>
+      <h3 class="shelf-item__name">${escapeHtml(item.name)}</h3>
+    </button>`;
+}
+
 function renderItems() {
-  const grid = $('#item-grid');
+  const hot = [];
+  const soon = [];
+  const ok = [];
+  fridge.forEach((item) => {
+    if (item.urgency === 'urgent') hot.push(item);
+    else if (item.urgency === 'soon') soon.push(item);
+    else ok.push(item);
+  });
+  hot.sort((a, b) => a.daysLeft - b.daysLeft);
+  soon.sort((a, b) => a.daysLeft - b.daysLeft);
+  ok.sort((a, b) => a.daysLeft - b.daysLeft);
+
+  const fill = (id, list, emptyMsg) => {
+    const el = $(id);
+    if (!el) return;
+    if (!list.length) {
+      el.innerHTML = `<div class="shelf-empty">${emptyMsg}</div>`;
+      return;
+    }
+    el.innerHTML = list.map(itemCard).join('');
+  };
+
   if (!fridge.length) {
-    grid.innerHTML = `
-      <div class="empty card">
-        <div class="illus">🧊</div>
-        <h3>Fridge is empty</h3>
-        <p>Scan a photo or load the sample fridge. We’ll estimate use-bys and queue tonight’s dinner quest.</p>
-        <button class="btn primary" type="button" id="empty-sample">Try sample fridge</button>
-      </div>`;
-    $('#empty-sample')?.addEventListener('click', () => runScan(null));
+    fill('#shelf-hot', [], 'Empty - scan or add items');
+    fill('#shelf-soon', [], '—');
+    fill('#shelf-ok', [], '—');
+    const hint = $('#fridge-hint');
+    if (hint) hint.textContent = 'Fridge is empty. Back in the kitchen, scan a photo or try the sample.';
     return;
   }
-  let list = [...fridge];
-  if (sortMode === 'urgency') list.sort((a, b) => a.daysLeft - b.daysLeft);
-  else list.sort((a, b) => a.name.localeCompare(b.name));
 
-  grid.innerHTML = list.map((item) => `
-    <article class="card item" data-id="${item.id}">
-      <div class="item-top">
-        <span class="item-emoji">${EMOJI[item.category] || '🫙'}</span>
-        <span class="badge ${item.urgency}">${labelFor(item.daysLeft)}</span>
-      </div>
-      <h3>${escapeHtml(item.name)}</h3>
-      <div class="meta">Use by ${item.expires}${item.note ? ` · ${escapeHtml(item.note)}` : ''}</div>
-      <div class="item-actions">
-        <button class="btn ghost sm" data-edit="${item.id}" type="button">Edit</button>
-        <button class="btn ghost sm danger" data-del="${item.id}" type="button">Remove</button>
-      </div>
-    </article>
-  `).join('');
+  fill('#shelf-hot', hot, 'Nothing urgent - nice!');
+  fill('#shelf-soon', soon, 'Quiet this week');
+  fill('#shelf-ok', ok, 'No long-keepers yet');
+  const hint = $('#fridge-hint');
+  if (hint) {
+    hint.textContent = `${hot.length} on top · ${soon.length} middle · ${ok.length} bottom. Tap an item to edit.`;
+  }
 }
 
 function renderRecipes() {
@@ -181,28 +198,36 @@ function renderRecipes() {
   const ranked = rankRecipes(fridge, { maxTime, beginnerOnly });
   const lede = $('#cook-lede');
   const grid = $('#recipe-grid');
+  const toc = $('#book-toc');
 
   if (!fridge.length) {
-    lede.textContent = 'Add fridge items first - then we rank by what expires soonest.';
+    lede.textContent = 'Stock the fridge first - then the book fills with urgency-ranked dishes.';
     grid.innerHTML = `
       <div class="empty card">
-        <div class="illus">📝</div>
-        <h3>Nothing to cook yet</h3>
-        <p>Your recipe list lights up once the fridge has something in it.</p>
-        <button class="btn primary" type="button" data-go-fridge>Go to Fridge</button>
+        <div class="illus">📖</div>
+        <h3>Blank pages</h3>
+        <p>Open the fridge and add ingredients to light up the book.</p>
+        <button class="btn primary" type="button" data-go-fridge>Enter fridge</button>
       </div>`;
+    if (toc) toc.innerHTML = '<li>Waiting for ingredients…</li>';
     grid.querySelector('[data-go-fridge]')?.addEventListener('click', () => setView('fridge'));
     return;
   }
   if (!ranked.length) {
     lede.textContent = 'No matches for these filters. Loosen time or turn off Beginner.';
     grid.innerHTML = `<div class="empty card"><div class="illus">🔍</div><h3>No recipe matches</h3><p>Try “Any” time or add more ingredients.</p></div>`;
+    if (toc) toc.innerHTML = '<li>No matches</li>';
     return;
   }
   const urgentN = fridge.filter((i) => i.urgency === 'urgent').length;
   lede.textContent = urgentN
-    ? `${ranked.length} matches · prioritizing ${urgentN} item${urgentN > 1 ? 's' : ''} that need you soon.`
-    : `${ranked.length} matches · sorted so earlier use-bys get cooked first.`;
+    ? `${ranked.length} recipes · prioritizing ${urgentN} item${urgentN > 1 ? 's' : ''} on the top shelf.`
+    : `${ranked.length} recipes · sorted so earlier use-bys get cooked first.`;
+
+  if (toc) {
+    toc.innerHTML = ranked.slice(0, 8).map(({ recipe }, i) =>
+      `<li>${i + 1}. ${escapeHtml(recipe.title)}</li>`).join('');
+  }
 
   grid.innerHTML = ranked.map(({ recipe, score, used, missing, whyNow }) => {
     const hot = used.some((u) => u.urgency === 'urgent');
@@ -239,7 +264,7 @@ function render() {
   renderStats();
   renderUrgency();
   renderItems();
-  if ($('#view-cook').classList.contains('on')) renderRecipes();
+  if ($('#view-book')?.classList.contains('on')) renderRecipes();
 }
 
 function itemsFromDetections(detected) {
@@ -262,7 +287,7 @@ function itemsFromDetections(detected) {
 async function runScan(file) {
   const note = $('#vision-note');
   note.textContent = 'Scanning… mock vision is reading your fridge.';
-  $('#fridge-hero').classList.add('scanning');
+  $('#kitchen-room')?.classList.add('scanning');
   try {
     const detected = file ? await vision.detectFromImage(file) : await vision.detectSample();
     fridge = itemsFromDetections(detected);
@@ -270,11 +295,10 @@ async function runScan(file) {
     note.textContent = `Found ${detected.length} items (${vision.mode} vision). Tap Edit on anything that’s off - you’re the source of truth.`;
     toast(`Fridge loaded · ${detected.length} items`);
     setView('fridge');
-    if (file) showPhoto(file);
   } catch (err) {
     note.textContent = `Scan failed: ${err.message}`;
   } finally {
-    $('#fridge-hero').classList.remove('scanning');
+    $('#kitchen-room')?.classList.remove('scanning');
   }
 }
 
@@ -291,6 +315,17 @@ function openItemDialog(item) {
   form.category.value = item?.category || 'veg';
   form.expires.value = item?.expires || addDays(new Date(), 5);
   form.note.value = item?.note || '';
+  const rm = $('#dialog-remove');
+  if (rm) {
+    rm.hidden = !item;
+    rm.onclick = () => {
+      if (!editingId) return;
+      fridge = fridge.filter((i) => i.id !== editingId);
+      $('#item-dialog').close();
+      persist();
+      toast('Removed from fridge');
+    };
+  }
   $('#item-dialog').showModal();
 }
 
@@ -420,7 +455,7 @@ function markCooked() {
     ? `Stars earned - rescued ${rescued.length} item${rescued.length > 1 ? 's' : ''}`
     : 'Logged! Kitchen streak continues.');
   cookCtx = null;
-  setView('fridge');
+  setView('kitchen');
 }
 
 /* Events */
@@ -435,12 +470,10 @@ $('#fridge-photo').addEventListener('change', (e) => {
   const file = e.target.files?.[0];
   if (file) runScan(file);
 });
+$('#enter-fridge')?.addEventListener('click', () => setView('fridge'));
+$('#open-book')?.addEventListener('click', () => setView('book'));
+$('#leave-fridge')?.addEventListener('click', () => setView('kitchen'));
 $('#add-item').addEventListener('click', () => openItemDialog(null));
-$('#sort-toggle').addEventListener('click', () => {
-  sortMode = sortMode === 'urgency' ? 'name' : 'urgency';
-  $('#sort-toggle').textContent = `Sort: ${sortMode}`;
-  renderItems();
-});
 $('#clear-fridge').addEventListener('click', () => {
   if (fridge.length && confirm('Clear all fridge items?')) {
     fridge = [];
@@ -468,15 +501,9 @@ $('#item-form').addEventListener('submit', (e) => {
   persist();
   toast('Saved to fridge');
 });
-$('#item-grid').addEventListener('click', (e) => {
-  const del = e.target.closest('[data-del]');
+$('#shelves')?.addEventListener('click', (e) => {
   const edit = e.target.closest('[data-edit]');
-  if (del) {
-    fridge = fridge.filter((i) => i.id !== del.dataset.del);
-    persist();
-  } else if (edit) {
-    openItemDialog(fridge.find((i) => i.id === edit.dataset.edit));
-  }
+  if (edit) openItemDialog(fridge.find((i) => i.id === edit.dataset.edit));
 });
 $('#recipe-grid').addEventListener('click', (e) => {
   const card = e.target.closest('[data-recipe]');

@@ -479,3 +479,200 @@ dialog::backdrop { background: rgba(58, 36, 20, 0.55); }
   .tips { grid-template-columns: repeat(2, 1fr); }
   .items { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 }
+
+/* ========== Kitchen scene ========== */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); border: 0;
+}
+.room {
+  position: relative; border: 3px solid var(--ink); border-radius: 24px;
+  overflow: hidden; box-shadow: var(--shadow); background: #f3e2c6;
+  min-height: 420px;
+}
+.room__wall {
+  height: 160px;
+  background:
+    linear-gradient(180deg, #f7d9b0 0%, #efc89a 100%);
+  border-bottom: 3px solid var(--ink);
+  position: relative;
+}
+.room__window {
+  position: absolute; left: 18px; top: 18px; width: 70px; height: 70px;
+  background: var(--sky-soft); border: 3px solid var(--ink); border-radius: 10px;
+  box-shadow: inset 0 0 0 4px #fff8ee;
+}
+.room__window span {
+  display: block; width: 100%; height: 100%;
+  background: linear-gradient(135deg, transparent 48%, var(--ink) 48%, var(--ink) 52%, transparent 52%),
+              linear-gradient(45deg, transparent 48%, var(--ink) 48%, var(--ink) 52%, transparent 52%);
+  opacity: 0.35;
+}
+.cork {
+  position: absolute; right: 16px; top: 20px; width: 110px; height: 88px;
+  background: #d4b896; border: 3px solid var(--ink); border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+.cork__note {
+  position: absolute; left: 8px; top: 10px;
+  background: var(--butter); border: 2px solid var(--ink);
+  font-family: var(--display); font-size: 0.62rem; font-weight: 600;
+  padding: 4px 6px; transform: rotate(-4deg);
+}
+.cork__note--2 {
+  left: 28px; top: 42px; background: var(--tomato-soft); transform: rotate(3deg);
+}
+.room__counter {
+  display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 12px;
+  padding: 14px; align-items: end; min-height: 240px;
+  background: linear-gradient(180deg, #e8c9a0 0%, #d9b48a 100%);
+}
+.room__floor {
+  height: 28px; background: repeating-linear-gradient(
+    90deg, #c9a57a 0 28px, #b89268 28px 56px
+  ); border-top: 3px solid var(--ink);
+}
+.fridge-unit { position: relative; }
+.fridge-closed {
+  width: 100%; aspect-ratio: 3/4.2; max-height: 260px;
+  background: linear-gradient(180deg, #eef6f0, #c5ddd0);
+  border: 3px solid var(--ink); border-radius: 18px 18px 8px 8px;
+  box-shadow: var(--shadow); cursor: pointer; position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-end; padding: 14px; font: inherit; color: var(--ink);
+  transition: transform 0.12s ease;
+}
+.fridge-closed:hover { transform: translate(-2px, -2px); }
+.fridge-closed__brand {
+  position: absolute; top: 16px; font-family: var(--display); font-weight: 700;
+  font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.fridge-closed__handle {
+  position: absolute; right: 10px; top: 32%; width: 10px; height: 70px;
+  background: var(--ink); border-radius: 8px;
+}
+.fridge-closed__cue {
+  font-family: var(--display); font-weight: 650; font-size: 0.9rem;
+  background: var(--butter); border: 2px solid var(--ink);
+  border-radius: 999px; padding: 6px 12px; box-shadow: var(--shadow-sm);
+}
+.fridge-closed__kick {
+  height: 14px; margin-top: 4px; background: #8a6a4a;
+  border: 3px solid var(--ink); border-top: 0; border-radius: 0 0 10px 10px;
+}
+.counter-top { display: flex; flex-direction: column; gap: 10px; }
+.book-closed {
+  display: flex; align-items: stretch; gap: 0; border: 0; padding: 0;
+  background: transparent; cursor: pointer; text-align: left; width: 100%;
+}
+.book-closed__spine {
+  width: 14px; background: var(--tomato); border: 3px solid var(--ink);
+  border-right: 0; border-radius: 8px 0 0 8px;
+}
+.book-closed__cover {
+  flex: 1; background: #fff8ee; border: 3px solid var(--ink);
+  border-radius: 0 12px 12px 0; padding: 12px 14px;
+  box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 2px;
+}
+.book-closed__cover em {
+  font-family: var(--display); font-style: normal; font-weight: 700; font-size: 1.05rem;
+}
+.book-closed__cover small { color: var(--muted); font-weight: 700; }
+.book-closed:hover .book-closed__cover { background: var(--butter-soft); }
+.scan-dock { padding: 12px; }
+.scan-dock .hero-actions { margin: 8px 0 0; }
+
+/* Fridge interior shelves */
+.fridge-interior {
+  padding: 14px; background:
+    linear-gradient(180deg, #e8f3ec 0%, #d2e6da 100%);
+}
+.fridge-interior__bar {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: end;
+  justify-content: space-between; margin-bottom: 12px;
+}
+.fridge-title {
+  font-family: var(--display); font-size: 1.2rem; margin: 0;
+}
+.shelves {
+  display: flex; flex-direction: column; gap: 10px;
+  background: linear-gradient(180deg, #f7fffa, #e4f0e8);
+  border: 3px solid var(--ink); border-radius: 18px; padding: 12px;
+  box-shadow: inset 0 0 0 6px rgba(255,255,255,0.35);
+  min-height: 360px;
+}
+.shelf {
+  flex: 1; display: flex; flex-direction: column; gap: 6px;
+  border-bottom: 3px solid var(--ink); padding-bottom: 8px;
+  position: relative;
+}
+.shelf:last-child { border-bottom: 0; padding-bottom: 0; }
+.shelf__label {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--display); font-size: 0.78rem; font-weight: 700;
+}
+.shelf__label em { font-style: normal; color: var(--muted); font-size: 0.7rem; }
+.shelf--top { background: linear-gradient(180deg, var(--tomato-soft), transparent); border-radius: 12px 12px 0 0; padding: 8px; }
+.shelf--mid { background: linear-gradient(180deg, var(--butter-soft), transparent); border-radius: 8px; padding: 8px; }
+.shelf--bot { background: linear-gradient(180deg, var(--mint-soft), transparent); border-radius: 0 0 12px 12px; padding: 8px; }
+.shelf__rail {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end;
+  min-height: 72px;
+}
+.shelf-item {
+  width: 88px; background: var(--paper); border: 3px solid var(--ink);
+  border-radius: 14px; padding: 8px; box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column; gap: 4px; text-align: left;
+  cursor: pointer; font: inherit; color: inherit;
+  transition: transform 0.1s ease;
+}
+.shelf-item:hover { transform: translateY(-3px) rotate(-1deg); }
+.shelf-item__emoji { font-size: 1.4rem; }
+.shelf-item__name {
+  font-family: var(--display); font-size: 0.78rem; font-weight: 650;
+  line-height: 1.15; margin: 0;
+}
+.shelf-item .badge { align-self: flex-start; font-size: 0.58rem; padding: 2px 6px; }
+.shelf-empty {
+  color: var(--muted); font-weight: 700; font-size: 0.8rem;
+  padding: 12px 4px; font-family: var(--display);
+}
+.fridge-hint { margin: 10px 0 0; }
+
+/* Recipe book spread */
+.book__toolbar {
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between;
+  align-items: end; margin-bottom: 8px;
+}
+.book__toolbar h2 { font-family: var(--display); margin: 0; font-size: 1.3rem; }
+.book__spread {
+  display: grid; gap: 0; border: 3px solid var(--ink); border-radius: 18px;
+  overflow: hidden; box-shadow: var(--shadow); background: #5c3a28;
+}
+.book__page {
+  background: #fff8ee; padding: 14px; min-height: 280px;
+}
+.book__page--left {
+  border-bottom: 3px dashed #c4a07a;
+  background:
+    repeating-linear-gradient(transparent, transparent 27px, rgba(58,36,20,0.06) 28px),
+    #fff8ee;
+}
+.book__index {
+  font-family: var(--display); font-weight: 700; margin: 0 0 8px; font-size: 1rem;
+}
+.book__toc {
+  margin: 0; padding-left: 18px; color: var(--muted); font-weight: 700; font-size: 0.85rem;
+}
+.book__toc li { margin-bottom: 6px; }
+.book__page--right { background: #fffdf8; }
+@media (min-width: 640px) {
+  .book__spread { grid-template-columns: 0.85fr 1.15fr; }
+  .book__page--left { border-bottom: 0; border-right: 3px dashed #c4a07a; }
+  .room__counter { min-height: 280px; }
+}
+@media (max-width: 520px) {
+  .room__counter { grid-template-columns: 1fr; }
+  .fridge-closed { max-height: 200px; aspect-ratio: 4/3; }
+  .tabs .tab { font-size: 0.78rem; padding: 8px 4px; }
+}
