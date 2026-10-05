@@ -2,46 +2,28 @@
 
 **Snap your fridge. Cook what expires first. Learn as you go.**
 
-UseBy is a small web app that helps you waste less food and get more comfortable in the kitchen. Upload a fridge photo (or try the sample), get estimated use-by dates from typical shelf life, then see recipes ranked so the soonest-to-spoil ingredients get used first.
+UseBy estimates use-by dates from typical shelf life and ranks recipes so the soonest-to-spoil ingredients get cooked first.
 
 **Live demo:** https://sheinapribadi-star.github.io/useby/
 
+See `PRD.md`, `DESIGN_BRIEF.md`, and `research/REFERENCES.md`.
+
 ## Features
-
-- 📷 Fridge photo scan (mock vision today — real vision plug-in ready)
-- ⏱ Use-by estimates from food category / known-item shelf life (editable)
-- 🍲 Recipe ranking by expiration urgency
-- 📚 Bite-size cooking tips for beginners
-- 💾 Persists in your browser (`localStorage`)
-
-## Architecture
-
-```
-VisionProvider  →  ShelfLife estimates  →  RecipeEngine scoring  →  UI
-     ↑ mock                                        ↑
-  swap for Claude Vision / GPT-4o / custom CV
-```
-
-- `src/vision.js` — `MockVisionProvider` + interface notes for a real provider
-- `src/shelfLife.js` — category/item day heuristics, urgency labels
-- `src/recipes.js` — curated recipes + urgency-aware scoring
-- `src/storage.js` — local persistence
-- `src/main.js` — UI
-
-No backend and no API keys required for the MVP.
+- Onboarding + empty states with clear CTAs
+- Mock vision scan (sample fridge or photo) — `VisionProvider` ready for real CV
+- Urgency-sorted inventory; editable use-bys
+- Recipes with **Why this now** priority copy
+- Cook mode step pager + rescue stats
+- Beginner tips
 
 ## Develop
-
 ```bash
-npm install
-npm run dev
-npm run build   # output in dist/ (GitHub Pages)
+npm install && npm run dev
+npm run build
 ```
 
 ## Author
-
 Sheina Pribadi · UC Berkeley
 
 ## License
-
 MIT
