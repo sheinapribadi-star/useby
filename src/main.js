@@ -546,6 +546,7 @@ $('#enter-fridge')?.addEventListener('click', () => {
   else openFridgeDoor();
 });
 $('#open-book')?.addEventListener('click', () => setView('book'));
+$('#book-back-fridge')?.addEventListener('click', () => setView('kitchen'));
 $('#leave-fridge')?.addEventListener('click', () => closeFridgeDoor());
 $('#add-item')?.addEventListener('click', () => openItemDialog(null));
 $('#clear-fridge')?.addEventListener('click', () => {
